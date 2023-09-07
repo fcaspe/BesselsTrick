@@ -26,7 +26,6 @@ static juce::String fmRatios6{"fmratios6"};
 static juce::String debug1{"debug1"};
 static juce::String debug2{"debug2"};
 static juce::String debug3{"debug3"};
-static juce::String debug4{"debug4"};
 static juce::String debug5{"debug5"};
 static juce::String debug6{"debug6"};
 static juce::String debug7{"debug7"};
@@ -230,8 +229,6 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
       std::make_unique<juce::AudioParameterInt>(
           juce::ParameterID(IDs::debug3, 1), "Audio Passthrough", 0, 1, 0),
       std::make_unique<juce::AudioParameterInt>(
-          juce::ParameterID(IDs::debug4, 1), "Clamp RMS", 0, 1, 0),
-      std::make_unique<juce::AudioParameterInt>(
           juce::ParameterID(IDs::debug5, 1), "Halve Pitch", 0, 1, 0),
       std::make_unique<juce::AudioParameterInt>(
           juce::ParameterID(IDs::debug6, 1), "Enable Reset", 0, 1, 0),
@@ -259,7 +256,6 @@ void FMTTProcessor::configure_gui_listeners() {
   treeState.addParameterListener(IDs::debug1, this);
   treeState.addParameterListener(IDs::debug2, this);
   treeState.addParameterListener(IDs::debug3, this);
-  treeState.addParameterListener(IDs::debug4, this);
   treeState.addParameterListener(IDs::debug5, this);
   treeState.addParameterListener(IDs::debug6, this);
   treeState.addParameterListener(IDs::debug7, this);
@@ -292,8 +288,6 @@ void FMTTProcessor::parameterChanged(const juce::String& param, float value) {
     _config.skipInference = (value != 0.0f);
   else if (param == IDs::debug3)
     _config.enableAudioPassthrough = (value != 0.0f);
-  else if (param == IDs::debug4)
-    _config.clamp_rms = (value != 0.0f);
   else if (param == IDs::debug5)
     _config.pitch_ratio = (value == 0.0f) ? 1.0f : 0.5f;
   else if (param == IDs::debug6)

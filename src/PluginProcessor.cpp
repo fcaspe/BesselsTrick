@@ -93,12 +93,10 @@ void FMTTProcessor::processBlock(juce::AudioBuffer<float>& buffer,
         raw_input[sample] + _feedbackBuffer[sample] * _config.feedback_level;
   }
   const float* audio_input = _feedbackBuffer.data();
+  
   // RMS
-  float rms_norm = _rms_processor->process(audio_input);
-  if (_config.clamp_rms == true) {
-    if (rms_norm > 0.0f) rms_norm = _config.rms_clamp_value;
-  }
-  float rms_in = rms_norm;
+  float rms_in = _rms_processor->process(audio_input);
+
   // PITCH
   _pitch_tracker->updateBuffer(audio_input);
   float pitch = _pitch_tracker->getPitch();
@@ -124,12 +122,12 @@ void FMTTProcessor::processBlock(juce::AudioBuffer<float>& buffer,
     fm_ol = fm_ol_placeholder;
 
   // OP ENABLE
-  for (int i = 0; i < _config.op_enable.size(); i++)
-    if (_config.op_enable[i] == false) fm_ol[i] = 0.0f;
+  //for (int i = 0; i < _config.op_enable.size(); i++)
+  //  if (_config.op_enable[i] == false) fm_ol[i] = 0.0f;
 
   /* DEBUG OVER CONSOLE */
   if (_config.enableConsoleOutput == true) {
-    std::cout << std::endl << "[f0 " << pitch << "] [ld " << rms_norm << "]\n";
+    std::cout << std::endl << "[f0 " << pitch << "] [ld " << rms_in << "]\n";
     for (int i = 0; i < 6; i++) std::cout << fm_ol[i] << " ";
     std::cout << std::endl;
   }
