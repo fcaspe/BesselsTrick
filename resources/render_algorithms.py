@@ -18,7 +18,7 @@ def change_color(img,ir,ig,ib,dr,dg,db):
   return image
 
 
-image = Image.open('algorithms_noborder.png')
+image = Image.open('algorithms.png')
 
 print(image.size)
 image = np.asarray(image).copy()
@@ -27,7 +27,7 @@ print(image.shape)
 jump_y = (image.shape[0]-2)//8
 jump_x = image.shape[1]//4-2
 
-# 12083D = 18,8,61
+# Background color 12083D = 18,8,61
 image = set_background(image,18,8,61)
 image = change_color(image,255,255,255,255,0,0)
 image = change_color(image,0,0,0,255,255,255)
