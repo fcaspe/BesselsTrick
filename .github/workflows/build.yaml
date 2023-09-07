@@ -1,0 +1,64 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  macos_arm64_build:
+    runs-on: macOS-latest
+    steps:
+      - name: Clone the repository
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Import Certificates
+        uses: apple-actions/import-codesign-certs@v2
+        with: 
+          p12-file-base64: ${{ secrets.DEV_ID_APP_CERT }}
+          p12-password: ${{ secrets.DEV_ID_APP_PASSWORD }}
+
+      - name: Setup torch
+        run: |
+          curl -L https://anaconda.org/pytorch/pytorch/2.0.0/download/osx-arm64/pytorch-2.0.0-py3.9_0.tar.bz2 -o pytorch.tar.bz2
+          mkdir pytorch && tar -xvf pytorch.tar.bz2 -C pytorch
+          mv ./pytorch/lib/python3.9/site-packages/torch ./libtorch
+          rm -rf pytorch
+
+      - name: Setup the build
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_ARCHITECTURES=arm64
+
+      - name: Build
+        working-directory: build
+        run: cmake --build . --config Release -j
+
+      - name: Codesign app bundle
+        working-directory: build
+        run: |
+          echo "Run codesign"
+          /usr/bin/codesign --force -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" -v ./BesselsTrick_artefacts/Release/AU/BesselsTrick.component --deep --strict --options=runtime --timestamp -v
+          /usr/bin/codesign --force -s "${{ secrets.DEVELOPER_ID_APPLICATION}}" -v ./BesselsTrick_artefacts/Release/VST3/BesselsTrick.vst3 --deep --strict --options=runtime --timestamp -v
+
+          echo "Creating temp notarization archive"
+          zip -r plugin.zip ./BesselsTrick_artefacts/Release/AU/BesselsTrick.component ./BesselsTrick_artefacts/Release/VST3/BesselsTrick.vst3
+
+          echo "Notarize"
+          xcrun notarytool submit plugin.zip --apple-id "${{ secrets.APPLE_ID}}" --password "${{ secrets.NOTARIZE_PASSWORD}}" --team-id "${{ secrets.TEAM_ID}}" --wait
+
+          echo "Attach staples"
+          xcrun stapler staple ./BesselsTrick_artefacts/Release/VST3/BesselsTrick.vst3
+          xcrun stapler staple ./BesselsTrick_artefacts/Release/AU/BesselsTrick.component
+          rm ./BesselsTrick_artefacts/Release/libBesselsTrick_SharedCode.a
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: BesselsTrick_MacOS_arm64
+          path: build/BesselsTrick_artefacts/Release

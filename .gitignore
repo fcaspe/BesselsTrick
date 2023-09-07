@@ -1,0 +1,8 @@
+testmodels/
+build/
+.vscode
+.DS_Store
+defaults.cfg
+src/print_alg.py
+libtorch
+*~
