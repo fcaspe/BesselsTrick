@@ -10,18 +10,21 @@ YIN F0 Estimator, frame by frame operation.
 Adapted from: https://github.com/JorenSix/Pidato
 */
 void Yin::init(float yinSampleRate, int yinBufferSize, int frameSize,
-               float yinThreshold) {
+               float yinThreshold, bool downsample_x2) {
+  _downsample_x2 = downsample_x2;
+  const int downsampleFactor = _downsample_x2 ? 2 : 1;
+  _sampleRate = yinSampleRate / downsampleFactor;
   _bufferSize = yinBufferSize;
-  _sampleRate = yinSampleRate;
   _frameSize = frameSize;
   _halfBufferSize = _bufferSize / 2;
   _probability = 0.0;
   _writeIdx = 0;
   _input_gain = 1.0f;
-  if (_frameSize < yinBufferSize)
-    _fillCounter = (yinBufferSize / _frameSize) -
-                   1;  // Counter that specifies how many frames to take before
-                       // starting to compute yin
+
+  // Counter that specifies how many frames to take before
+  // starting to compute yin
+  if ((_frameSize / downsampleFactor) < yinBufferSize)
+    _fillCounter = (yinBufferSize / (_frameSize / downsampleFactor)) - 1;
   else
     _fillCounter = 0;  // A single frame will fill yin buffer.
 
@@ -140,9 +143,14 @@ void Yin::cumulativeMeanNormalizedDifference() {
 void Yin::updateBuffer(const float *frame) {
   // std::cout << "\nupdate buffer - framesize " << _frameSize << std::endl;
   // std::cout << "\n writeidx start: " << _writeIdx << std::endl;
-  for (int i = 0; i < _frameSize; i++) {
+  const int downsampleFactor = _downsample_x2 ? 2 : 1;
+  for (int i = 0; i < _frameSize/downsampleFactor; i++) {
     const int idx = (i + _writeIdx) & (_bufferSize - 1);
-    _audioBuffer[idx] = _input_gain * frame[i];
+    
+    if(_downsample_x2)
+      _audioBuffer[idx] = _input_gain * (frame[2*i] + frame[2*i+1]) / 2.0f;
+    else
+      _audioBuffer[idx] = _input_gain * frame[i];
     // std::cout << idx << " ";
     // std::cout << _audioBuffer[idx] << " ";
   }

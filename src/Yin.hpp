@@ -12,7 +12,7 @@ class Yin {
   Yin();
   ~Yin();
   void init(float sampleRate, int bufferSize, int frameSize,
-            float yinThreshold);
+            float yinThreshold, bool downsample_x2);
   void updateBuffer(const float* frame);
   float getPitch();
   float getProbability();
@@ -42,6 +42,7 @@ class Yin {
   float _probability;
   float _input_gain;
   int _fillCounter;
+  bool _downsample_x2;
 };
 
 #endif
