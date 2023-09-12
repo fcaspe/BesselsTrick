@@ -6,9 +6,11 @@
 
 struct PluginEditorConfig
 {
+    // Deprecated. All this should be reimplemented with valueTrees.
     std::vector<std::string> modelfilenames;    //Valid model filename list
     std::vector<std::string> modelnames;        //Valid modelname list
     std::vector<int> nstates;                   //Valid model statewidth list
+    int selectedid;                             //Selected id 
 };
 
 struct PluginConfig

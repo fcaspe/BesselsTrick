@@ -27,6 +27,7 @@ FMTTProcessor::FMTTProcessor()
   add_triggers();
   configure_gui_listeners();
   setupMeters();
+  setupValueTree();
   // juce::File gui_tree(
   //  "/Users/franco/aim/projs/vst/ddx7-vst/resources/magic.xml");
   // magicState.setGuiValueTree(gui_tree);
@@ -210,7 +211,8 @@ void FMTTProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
   const int YIN_WINDOW = 1024;
   if (_pitch_tracker)
     _pitch_tracker->init(sampleRate, YIN_WINDOW, samplesPerBlock,
-                         0.15f);  // Threshold
+                         0.15f, // Threshold
+                         true); // Downsample x2
   if (outputLevel) outputLevel->setNumChannels(2);
 }
 

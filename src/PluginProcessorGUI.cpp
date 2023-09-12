@@ -3,6 +3,7 @@
 #include "DrawableLabel.hpp"
 #include "PluginProcessor.h"
 
+// ID's for objects in GUI
 namespace GUI_IDs {
 static juce::String models{"combobox_models"};
 static juce::String algorithm{"knob_algo"};
@@ -15,7 +16,10 @@ static juce::String fmRatios5{"knob_fr5"};
 static juce::String fmRatios6{"knob_fr6"};
 }  // namespace GUI_IDs
 
+// IDs for properties in ValueTree
 namespace IDs {
+static juce::String cboxselectedid{"cboxselectedid"};
+static juce::String modeldir{"modeldir"};
 static juce::String algorithm{"algorithm"};
 static juce::String fmRatios1{"fmratios1"};
 static juce::String fmRatios2{"fmratios2"};
@@ -35,11 +39,16 @@ static juce::String debug9{"debug9"};
 static juce::Identifier oscilloscope{"oscilloscope"};
 }  // namespace IDs
 
+/**
+initialiseBuilder(): 
+    Here we initialize the GUI Builder
+*/
 void FMTTProcessor::initialiseBuilder(foleys::MagicGUIBuilder& builder) {
   builder.registerJUCEFactories();
   builder.registerJUCELookAndFeels();
-
+  
   builder.registerFactory("DrawableLabel", &DrawableLabelItem::factory);
+  
   // Workaround to fetch builder from MagicPlugin without
   // overriding createEditor() (which should not be declared by plugin)
   builder_ptr = &builder;
@@ -50,7 +59,12 @@ void FMTTProcessor::setupMeters() {
       magicState.createAndAddObject<foleys::MagicLevelSource>("level");
 }
 
-void FMTTProcessor::update_knob(juce::String knob_id, double value) {
+/**
+updateKnob(): 
+    When we load a new model, update knobs
+*/
+void FMTTProcessor::updateKnob(juce::String knob_id, double value) {
+  // Find knob
   if (auto* item = builder_ptr->findGuiItemWithId(knob_id)) {
     // std::cout << "Found " << knob_id << std::endl;
     if (auto* slider =
@@ -60,8 +74,26 @@ void FMTTProcessor::update_knob(juce::String knob_id, double value) {
   }
 }
 
-void FMTTProcessor::update_algo_plot(const int algo_num) {
-  if (builder_ptr != 0)
+void FMTTProcessor::updateKnobs() {
+  // Each knob update will trigger a notification which in turn,
+  // Will update the internal plugin state
+  updateKnob(GUI_IDs::algorithm, _config.fm_config + 1);
+  updateKnob(GUI_IDs::fmRatios1, _config.fm_ratios[0]);
+  updateKnob(GUI_IDs::fmRatios2, _config.fm_ratios[1]);
+  updateKnob(GUI_IDs::fmRatios3, _config.fm_ratios[2]);
+  updateKnob(GUI_IDs::fmRatios4, _config.fm_ratios[3]);
+  updateKnob(GUI_IDs::fmRatios5, _config.fm_ratios[4]);
+  updateKnob(GUI_IDs::fmRatios6, _config.fm_ratios[5]);
+}
+
+/**
+updateAlgoPlot(): 
+    When algorithm changes, update graphic
+*/
+void FMTTProcessor::updateAlgoPlot(const int algo_num) {
+  auto *alg = magicState.getObjectWithType<juce::var>("algorithm");
+  if(alg != nullptr) *alg = algo_num;
+  if (builder_ptr != nullptr)
     if (auto* item = builder_ptr->findGuiItemWithId(GUI_IDs::algoplot)) {
       if (auto* label =
               dynamic_cast<DrawableLabel*>(item->getWrappedComponent())) {
@@ -70,70 +102,84 @@ void FMTTProcessor::update_algo_plot(const int algo_num) {
     }
 }
 
-void FMTTProcessor::update_knobs() {
-  // Update treeState with knob position
-  /*
-  auto state = treeState.copyState();
-  state = state.setProperty(IDs::algorithm, (int)_config.fm_config, nullptr)
-              .setProperty(IDs::fmRatios1, _config.fm_ratios[0], nullptr)
-              .setProperty(IDs::fmRatios2, _config.fm_ratios[1], nullptr)
-              .setProperty(IDs::fmRatios3, _config.fm_ratios[2], nullptr)
-              .setProperty(IDs::fmRatios4, _config.fm_ratios[3], nullptr)
-              .setProperty(IDs::fmRatios5, _config.fm_ratios[4], nullptr)
-              .setProperty(IDs::fmRatios6, _config.fm_ratios[5], nullptr);
-  treeState.replaceState(state);
-  */
-  // Each knob update will trigger a notification which in turn,
-  // Will update the internal plugin state
-  update_knob(GUI_IDs::algorithm, _config.fm_config + 1);
-  update_knob(GUI_IDs::fmRatios1, _config.fm_ratios[0]);
-  update_knob(GUI_IDs::fmRatios2, _config.fm_ratios[1]);
-  update_knob(GUI_IDs::fmRatios3, _config.fm_ratios[2]);
-  update_knob(GUI_IDs::fmRatios4, _config.fm_ratios[3]);
-  update_knob(GUI_IDs::fmRatios5, _config.fm_ratios[4]);
-  update_knob(GUI_IDs::fmRatios6, _config.fm_ratios[5]);
-}
-
+/**
+setupGUI(): 
+    Setup GUI attributes (callbacks)
+*/
 void FMTTProcessor::setupGUI() {
-  // Load items in GUI
-  if (builder_ptr != 0)
+  if (builder_ptr != nullptr)
+    // Find ComboBox
     if (auto* item = builder_ptr->findGuiItemWithId(GUI_IDs::models)) {
-      std::cout << "Setup ComboBox" << std::endl;
       if (auto* combo_box =
               dynamic_cast<juce::ComboBox*>(item->getWrappedComponent())) {
+        // Callback method
         combo_box->onChange = [&] {
           // Store state for gui recall
           auto* item = builder_ptr->findGuiItemWithId(GUI_IDs::models);
           auto* combo_box =
               dynamic_cast<juce::ComboBox*>(item->getWrappedComponent());
+
           const unsigned int selected_entry = combo_box->getSelectedId() - 1;
           std::cout << "Changed item:" << selected_entry << std::endl;
           // Stop Audio Processing Thread ( It can crash when re-loading model )
           suspendProcessing(true);
           reload_model(selected_entry);
-          update_knobs();
+          updateKnobs();
           suspendProcessing(false);
         };
       }
     }
 }
 
+/**
+updateGUI(): 
+    Refresh GUI
+*/
 void FMTTProcessor::updateGUI() {
-  if (builder_ptr != 0) {
-    if (auto* item = builder_ptr->findGuiItemWithId(GUI_IDs::models)) {
+  if (builder_ptr != nullptr) {
+    // Find Combobox, clear it and refill with modelnames
+    if (auto* item = builder_ptr->findGuiItemWithId(GUI_IDs::models)) 
+      {
       std::cout << "Found ComboBox" << std::endl;
       if (auto* combo_box =
-              dynamic_cast<juce::ComboBox*>(item->getWrappedComponent())) {
+              dynamic_cast<juce::ComboBox*>(item->getWrappedComponent())) 
+        {
         combo_box->clear(false);  // Remove all previous items
         int menu_idx = 1;
-        for (std::string menuentry : _guiconfig.modelnames) {
+        for (std::string menuentry : _guiconfig.modelnames) 
+          {
           combo_box->addItem(menuentry, menu_idx);
           menu_idx++;
-        }
+          }
         combo_box->setSelectedId(1);  // Select first item
+        }
       }
-    }
   }
+}
+
+void FMTTProcessor::setupValueTree()
+{
+  //std::cout << "[DEBUG] Setup Tree States" << std::endl;
+  //treeState.state.setProperty(juce::Identifier(IDs::modeldir),"",nullptr);
+  //treeState.state.setProperty(juce::Identifier(IDs::cboxselectedid),0,nullptr);
+  magicState.createAndAddObject<juce::var>("algorithm");
+  auto *alg = magicState.getObjectWithType<juce::var>("algorithm");
+  if(alg == nullptr)
+    std::cout << "[SETUP VAL TREE] Error creating Object";
+  else
+    *alg = 1;
+}
+
+
+void FMTTProcessor::postSetStateInformation()
+{
+  //std::cout << "[postSetStateInformation] Recalling from treeState" << std::endl;
+  //int selected_model_id = treeState.state[juce::Identifier(IDs::cboxselectedid)];
+  //juce::String model_dir = treeState.state[juce::Identifier(IDs::modeldir)];
+  //_config.model_path = model_dir.toStdString();
+  //loadModelList();
+  //updateGUI();
+
 }
 
 void FMTTProcessor::showLoadDialog() {
@@ -153,6 +199,9 @@ void FMTTProcessor::showLoadDialog() {
           file.getParentDirectory().getFullPathName().toStdString();
     else
       _config.model_path = file.getFullPathName().toStdString();
+    //treeState.state.setProperty(juce::Identifier(IDs::modeldir),
+    //                juce::var(_config.model_path),
+    //                nullptr);
     setupGUI();
     loadModelList();
     updateGUI();
@@ -184,8 +233,6 @@ void FMTTProcessor::loadModelList() {
 
 void FMTTProcessor::add_triggers() {
   magicState.addTrigger("load-model", [&] { showLoadDialog(); });
-  magicState.addTrigger("test-trigger",
-                        [&] { std::cout << "Test" << std::endl; });
   return;
 }
 
@@ -268,7 +315,7 @@ void FMTTProcessor::parameterChanged(const juce::String& param, float value) {
   // FM Configuration
   if (param == IDs::algorithm) {
     _config.fm_config = (int)value - 1;
-    update_algo_plot(int(value));
+    updateAlgoPlot(int(value));
   } else if (param == IDs::fmRatios1)
     _config.fm_ratios[0] = value;
   else if (param == IDs::fmRatios2)

@@ -1,6 +1,7 @@
 // Avoid using namespace juce, as it collides with libtorch.
 #define DONT_SET_USING_JUCE_NAMESPACE 1
 #include "JuceHeader.h"
+#include <foleys_gui_magic/foleys_gui_magic.h>
 
 // Some nice example drawing
 class DrawableLabel : public juce::Component,
@@ -65,20 +66,16 @@ public:
         addAndMakeVisible (drawablelabel);
     }
 
-    //std::vector<foleys::SettableProperty> getSettableProperties() const override
-    //{
-        //std::vector<foleys::SettableProperty> newProperties;
-
-        //newProperties.push_back ({ configNode, "factor", foleys::SettableProperty::Number, 1.0f, {} });
-
-        //return newProperties;
-    //}
-
-    // Override update() to set the values to your custom component
+    // Override update() to set the GUI values to your custom component
     void update() override
     {
-        //auto factor = getProperty ("factor");
-        //drawablelabel.setFactor (factor.isVoid() ? 3.0f : float (factor));
+        
+        juce::var *alg = magicBuilder.getMagicState().getObjectWithType<juce::var>("algorithm");
+        if(alg != nullptr)
+            {
+            std::cout << "[UPDATE] alg: " << int(*alg)<< std::endl;
+            drawablelabel.setAlgorithm (int(*alg));
+            }
     }
 
     juce::Component* getWrappedComponent() override

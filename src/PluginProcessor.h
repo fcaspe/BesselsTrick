@@ -47,7 +47,7 @@ class FMTTProcessor : public foleys::MagicProcessor,
 
   void initialiseBuilder(foleys::MagicGUIBuilder& builder) override;
   void parameterChanged(const juce::String& param, float value) override;
-  // void postSetStateInformation() override;
+  void postSetStateInformation () override;
   void configure_gui_listeners();
   void add_triggers();
   void showLoadDialog();
@@ -55,9 +55,10 @@ class FMTTProcessor : public foleys::MagicProcessor,
   void updateGUI();
   void setupMeters();
   void setupGUI();
-  void update_knob(juce::String knob_id, double value);
-  void update_knobs();
-  void update_algo_plot(const int algo_num);
+  void setupValueTree();
+  void updateKnob(juce::String knob_id, double value);
+  void updateKnobs();
+  void updateAlgoPlot(const int algo_num);
 
   /* Model Routine Functions*/
   void load_gru_model(
