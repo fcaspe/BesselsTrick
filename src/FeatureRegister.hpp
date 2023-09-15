@@ -32,6 +32,7 @@ class FeatureRegister {
     float rms_return = 0.0f;
     switch (_state) {
       case DISABLED:
+        rms_return = rms;
         break;
       case WAITING:
         if (f0 > 0.0f)  // Trigger condition
@@ -44,6 +45,7 @@ class FeatureRegister {
           rms_return = 0.0f;
           _state = WAITING;
         }
+        break;
       case TRIGGERED:
         if (f0 <= 0.0f) {
           rms_return = 0.0f;
@@ -54,7 +56,7 @@ class FeatureRegister {
           else if (_mode == LATCH)
             rms_return = _registered_rms;
         }
-
+        break;
       default:
         break;
     }

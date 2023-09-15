@@ -154,7 +154,7 @@ void Yin::updateBuffer(const float *frame) {
     // std::cout << idx << " ";
     // std::cout << _audioBuffer[idx] << " ";
   }
-  _writeIdx = (_writeIdx + _frameSize) & (_bufferSize - 1);
+  _writeIdx = (_writeIdx + (_frameSize/downsampleFactor)) & (_bufferSize - 1);
   // std::cout << "\n writeidx end: " << _writeIdx << std::endl;
 }
 

@@ -48,6 +48,7 @@ void FMTTProcessor::initialiseBuilder(foleys::MagicGUIBuilder& builder) {
   builder.registerJUCELookAndFeels();
   
   builder.registerFactory("DrawableLabel", &DrawableLabelItem::factory);
+  builder.registerFactory("ModelComboBox", &ModelComboBoxItem::factory);
   
   // Workaround to fetch builder from MagicPlugin without
   // overriding createEditor() (which should not be declared by plugin)

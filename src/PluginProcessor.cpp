@@ -212,7 +212,7 @@ void FMTTProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
   if (_pitch_tracker)
     _pitch_tracker->init(sampleRate, YIN_WINDOW, samplesPerBlock,
                          0.15f, // Threshold
-                         true); // Downsample x2
+                         false); // Downsample x2
   if (outputLevel) outputLevel->setNumChannels(2);
 }
 

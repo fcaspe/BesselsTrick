@@ -73,7 +73,7 @@ public:
         juce::var *alg = magicBuilder.getMagicState().getObjectWithType<juce::var>("algorithm");
         if(alg != nullptr)
             {
-            std::cout << "[UPDATE] alg: " << int(*alg)<< std::endl;
+            //std::cout << "[UPDATE] alg: " << int(*alg)<< std::endl;
             drawablelabel.setAlgorithm (int(*alg));
             }
     }
@@ -87,4 +87,36 @@ private:
     DrawableLabel drawablelabel;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DrawableLabelItem)
+};
+
+
+// This class is creating and configuring your custom component
+class ModelComboBoxItem : public foleys::GuiItem
+{
+public:
+    FOLEYS_DECLARE_GUI_FACTORY (ModelComboBoxItem)
+
+    ModelComboBoxItem (foleys::MagicGUIBuilder& builder, const juce::ValueTree& node) : foleys::GuiItem (builder, node)
+    {
+
+        addAndMakeVisible (combobox);
+    }
+
+    // Override update() to set the GUI values to your custom component
+    void update() override
+    {
+        std::cout << "[UPDATE CBOX] Update()" << std::endl;
+        combobox.addItem("Set by update()",1);
+
+    }
+
+    juce::Component* getWrappedComponent() override
+    {
+        return &combobox;
+    }
+
+private:
+    juce::ComboBox combobox;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ModelComboBoxItem)
 };
