@@ -103,61 +103,6 @@ void FMTTProcessor::updateAlgoPlot(const int algo_num) {
     }
 }
 
-/**
-setupGUI(): 
-    Setup GUI attributes (callbacks)
-*/
-void FMTTProcessor::setupGUI() {
-  if (builder_ptr != nullptr)
-    // Find ComboBox
-    if (auto* item = builder_ptr->findGuiItemWithId(GUI_IDs::models)) {
-      if (auto* combo_box =
-              dynamic_cast<juce::ComboBox*>(item->getWrappedComponent())) {
-        // Callback method
-        combo_box->onChange = [&] {
-          // Store state for gui recall
-          auto* item = builder_ptr->findGuiItemWithId(GUI_IDs::models);
-          auto* combo_box =
-              dynamic_cast<juce::ComboBox*>(item->getWrappedComponent());
-
-          const unsigned int selected_entry = combo_box->getSelectedId() - 1;
-          std::cout << "Changed item:" << selected_entry << std::endl;
-          // Stop Audio Processing Thread ( It can crash when re-loading model )
-          suspendProcessing(true);
-          reload_model(selected_entry);
-          updateKnobs();
-          suspendProcessing(false);
-        };
-      }
-    }
-}
-
-/**
-updateGUI(): 
-    Refresh GUI
-*/
-void FMTTProcessor::updateGUI() {
-  if (builder_ptr != nullptr) {
-    // Find Combobox, clear it and refill with modelnames
-    if (auto* item = builder_ptr->findGuiItemWithId(GUI_IDs::models)) 
-      {
-      std::cout << "Found ComboBox" << std::endl;
-      if (auto* combo_box =
-              dynamic_cast<juce::ComboBox*>(item->getWrappedComponent())) 
-        {
-        combo_box->clear(false);  // Remove all previous items
-        int menu_idx = 1;
-        for (std::string menuentry : _guiconfig.modelnames) 
-          {
-          combo_box->addItem(menuentry, menu_idx);
-          menu_idx++;
-          }
-        combo_box->setSelectedId(1);  // Select first item
-        }
-      }
-  }
-}
-
 void FMTTProcessor::setupValueTree()
 {
   //std::cout << "[DEBUG] Setup Tree States" << std::endl;
@@ -203,9 +148,8 @@ void FMTTProcessor::showLoadDialog() {
     //treeState.state.setProperty(juce::Identifier(IDs::modeldir),
     //                juce::var(_config.model_path),
     //                nullptr);
-    setupGUI();
     loadModelList();
-    updateGUI();
+    builder_ptr->findGuiItemWithId(GUI_IDs::models)->update();
     builder_ptr->closeOverlayDialog();
   });
   dialog->setCancelFunction([&] {

@@ -8,6 +8,7 @@ void FMTTProcessor::apply_config() {
 }
 
 void FMTTProcessor::reload_model(const unsigned int entry) {
+  if(entry > _guiconfig.modelnames.size()) return;
   std::cout << "FMTTProcessor::reload_model() -  Loading "
             << _guiconfig.modelnames[entry]
             << "  - state: " << _guiconfig.nstates[entry] << std::endl;

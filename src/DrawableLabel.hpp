@@ -2,7 +2,7 @@
 #define DONT_SET_USING_JUCE_NAMESPACE 1
 #include "JuceHeader.h"
 #include <foleys_gui_magic/foleys_gui_magic.h>
-
+#include "PluginProcessor.h"
 // Some nice example drawing
 class DrawableLabel : public juce::Component,
                       private juce::Timer
@@ -105,8 +105,32 @@ public:
     // Override update() to set the GUI values to your custom component
     void update() override
     {
-        std::cout << "[UPDATE CBOX] Update()" << std::endl;
-        combobox.addItem("Set by update()",1);
+        static FMTTProcessor *processor = (FMTTProcessor*)magicBuilder.getMagicState().getProcessor();
+        if(processor)
+            {
+            combobox.onChange = [&] {
+                static FMTTProcessor *proc = (FMTTProcessor*)magicBuilder.getMagicState().getProcessor();
+                const unsigned int selected_entry = combobox.getSelectedId() - 1;
+                std::cout << "Proc is null: " << (proc==nullptr) << std::endl;
+                std::cout << "Changed item:" << selected_entry << std::endl;
+                // Stop Audio Processing Thread ( It can crash when re-loading model )
+                proc->suspendProcessing(true);
+                proc->reload_model(selected_entry);
+                proc->updateKnobs();
+                proc->suspendProcessing(false);
+                };
+            
+            combobox.clear(false);  // Remove all previous items
+            int menu_idx = 1;
+            for (std::string menuentry : processor->_guiconfig.modelnames) 
+                {
+                combobox.addItem(menuentry, menu_idx);
+                menu_idx++;
+                }
+            combobox.setSelectedId(1);  // Select first item
+            }
+        //std::cout << "[UPDATE CBOX] Update()" << std::endl;
+        //combobox.addItem("Set by update()",1);
 
     }
 

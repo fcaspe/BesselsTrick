@@ -52,9 +52,7 @@ class FMTTProcessor : public foleys::MagicProcessor,
   void add_triggers();
   void showLoadDialog();
   void loadModelList();
-  void updateGUI();
   void setupMeters();
-  void setupGUI();
   void setupValueTree();
   void updateKnob(juce::String knob_id, double value);
   void updateKnobs();
