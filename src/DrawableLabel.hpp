@@ -102,24 +102,23 @@ public:
         addAndMakeVisible (combobox);
     }
 
-    // Override update() to set the GUI values to your custom component
+    // Sets combobox callback and updates model list.
     void update() override
     {
-        static FMTTProcessor *processor = (FMTTProcessor*)magicBuilder.getMagicState().getProcessor();
-        if(processor)
+        if (auto* processor = dynamic_cast<FMTTProcessor*>(magicBuilder.getMagicState().getProcessor()))
             {
             combobox.onChange = [&] {
-                static FMTTProcessor *proc = (FMTTProcessor*)magicBuilder.getMagicState().getProcessor();
-                const unsigned int selected_entry = combobox.getSelectedId() - 1;
-                std::cout << "Proc is null: " << (proc==nullptr) << std::endl;
-                std::cout << "Changed item:" << selected_entry << std::endl;
-                // Stop Audio Processing Thread ( It can crash when re-loading model )
-                proc->suspendProcessing(true);
-                proc->reload_model(selected_entry);
-                proc->updateKnobs();
-                proc->suspendProcessing(false);
-                };
-            
+                if (auto* proc = dynamic_cast<FMTTProcessor*>(magicBuilder.getMagicState().getProcessor()))
+                {
+                    const auto selected_entry = combobox.getSelectedId() - 1;
+                    // Stop Audio Processing Thread ( It can crash when re-loading model )
+                    proc->suspendProcessing(true);
+                    proc->reload_model(selected_entry);
+                    proc->updateKnobs();
+                    proc->suspendProcessing(false);
+                }
+
+            };
             combobox.clear(false);  // Remove all previous items
             int menu_idx = 1;
             for (std::string menuentry : processor->_guiconfig.modelnames) 
@@ -127,11 +126,8 @@ public:
                 combobox.addItem(menuentry, menu_idx);
                 menu_idx++;
                 }
-            combobox.setSelectedId(1);  // Select first item
+            combobox.setSelectedId(1,juce::dontSendNotification);  // Select first item
             }
-        //std::cout << "[UPDATE CBOX] Update()" << std::endl;
-        //combobox.addItem("Set by update()",1);
-
     }
 
     juce::Component* getWrappedComponent() override
