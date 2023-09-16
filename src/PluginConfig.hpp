@@ -9,7 +9,7 @@ struct PluginGUIConfig
     std::vector<std::string> modelfilenames;    //Valid model filename list
     std::vector<std::string> modelnames;        //Valid modelname list
     std::vector<int> nstates;                   //Valid model statewidth list
-    std::string modeldir;                       //Directory listed for models
+    std::string modeldir = "~/";                //Directory listed for models
     int selectedid;                             //Selected id 
 };
 
@@ -23,12 +23,10 @@ struct PluginConfig
     bool infinite_sustain;
     bool allow_model_reset;
     bool enableOSCOutput;
-    //std::string model_path = "/Users/franco/aim/projs/vst/ddx7-vst/models/testmodels/testmodels";
     
     // FM Synth config
     std::array<float, 6> fm_ratios = {0};       //FM Ratios
     unsigned int fm_config = 0;
-    //std::array<bool,6> op_enable = {true,true,true,true,true,true};
 
     //Function switches
     bool enableConsoleOutput;
@@ -44,8 +42,6 @@ struct PluginConfig
         infinite_sustain = false;
         allow_model_reset = true;
         enableOSCOutput = true;
-        //fm_config = FMConfig::FM_ALG2_STRINGS;
-
         enableConsoleOutput = false;
         skipInference = false;
         enableAudioPassthrough = false;

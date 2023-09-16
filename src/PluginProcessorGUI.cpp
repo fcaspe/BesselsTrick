@@ -1,6 +1,6 @@
 #include <cmath>
 
-#include "DrawableLabel.hpp"
+#include "GuiItems.hpp"
 #include "PluginProcessor.h"
 
 // ID's for objects in GUI

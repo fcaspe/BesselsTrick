@@ -126,7 +126,7 @@ target_sources(BesselsTrick PRIVATE
     src/FMSynth.cpp
     src/RMSProcessor.cpp
     src/Yin.cpp
-    src/DrawableLabel.cpp
+    src/GuiItems.cpp
     )
 
 # `target_compile_definitions` adds some preprocessor definitions to our target. In a Projucer
