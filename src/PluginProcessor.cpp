@@ -89,11 +89,12 @@ void FMTTProcessor::processBlock(juce::AudioBuffer<float>& buffer,
   const float* raw_input = buffer.getReadPointer(input_ch);
 
   // Feedback
-  for (auto sample = 0; sample < buffer.getNumSamples(); sample++) {
-    _feedbackBuffer[sample] =
-        raw_input[sample] + _feedbackBuffer[sample] * _config.feedback_level;
-  }
-  const float* audio_input = _feedbackBuffer.data();
+  //for (auto sample = 0; sample < buffer.getNumSamples(); sample++) {
+  // _feedbackBuffer[sample] =
+  //      raw_input[sample] + _feedbackBuffer[sample] * _config.feedback_level;
+  //}
+  //const float* audio_input = _feedbackBuffer.data();
+  const float* audio_input = buffer.getReadPointer(input_ch);
   
   // RMS
   float rms_in = _rms_processor->process(audio_input);
@@ -176,7 +177,7 @@ void FMTTProcessor::processBlock(juce::AudioBuffer<float>& buffer,
       buffer.clear(i, 0, buffer.getNumSamples());
       for (auto sample = 0; sample < buffer.getNumSamples(); sample++) {
         channelData[sample] = renderer_buffer[sample];
-        _feedbackBuffer[sample] = renderer_buffer[sample];
+        //_feedbackBuffer[sample] = renderer_buffer[sample];
       }
     } else {
       for (auto sample = 0; sample < buffer.getNumSamples(); sample++) {
@@ -198,7 +199,7 @@ void FMTTProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
   _load_measurer.reset(sampleRate, samplesPerBlock);
 
   /* Init renderer */
-  _feedbackBuffer.resize(samplesPerBlock);
+  //_feedbackBuffer.resize(samplesPerBlock);
   if (_fmsynth) _fmsynth->init(sampleRate, samplesPerBlock);
 
   /* Init RMS processor */

@@ -64,11 +64,11 @@ class FMTTProcessor : public foleys::MagicProcessor,
   void load_gru_model(const std::string& model_path, int n_state);
   void apply_config();
   void reload_model(const unsigned int entry);
-  // void handle_frs(int entry_id);
+
+
   /* Application Specific attributes. */
   juce::AudioProcessorValueTreeState treeState;
-  // float rms_norm_feedback;
-  std::vector<float> _feedbackBuffer;
+  //std::vector<float> _feedbackBuffer;
   juce::AudioProcessLoadMeasurer _load_measurer;  // Load measurer
   std::unique_ptr<FMSynth> _fmsynth;              // Synth.
   std::unique_ptr<DDSPModel> _model;  // Resynthesis Model wrapper pointer.
