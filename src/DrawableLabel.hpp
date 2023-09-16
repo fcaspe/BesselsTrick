@@ -116,19 +116,21 @@ public:
                     proc->reload_model(selected_entry);
                     proc->updateKnobs();
                     proc->suspendProcessing(false);
+                    if(auto *guiconfig = magicBuilder.getMagicState().getObjectWithType<PluginGUIConfig>("guiconfig"))
+                        guiconfig->selectedid = combobox.getSelectedId();
                 }
 
             };
             combobox.clear(false);  // Remove all previous items
             int menu_idx = 1;
-            auto *modelnames = magicBuilder.getMagicState().getObjectWithType<std::vector<std::string>>("modelnames");
-            if(!modelnames) return;
-            for (std::string menuentry : *modelnames) 
+            auto *guiconfig = magicBuilder.getMagicState().getObjectWithType<PluginGUIConfig>("guiconfig");
+            if(!guiconfig) return;
+            for (std::string menuentry : guiconfig->modelnames) 
                 {
                 combobox.addItem(menuentry, menu_idx);
                 menu_idx++;
                 }
-            combobox.setSelectedId(1,juce::dontSendNotification);  // Select first item
+            combobox.setSelectedId(guiconfig->selectedid,juce::dontSendNotification);  // Select first item
             }
     }
 

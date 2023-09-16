@@ -76,7 +76,6 @@ class FMTTProcessor : public foleys::MagicProcessor,
   std::unique_ptr<RMS_Processor> _rms_processor;
   // std::unique_ptr<RMS_Processor> _rms_processor_feedback;
   PluginConfig _config;
-  PluginEditorConfig _guiconfig;
   juce::OSCSender _osc_sender;
   FeatureRegister _feat_register;
 

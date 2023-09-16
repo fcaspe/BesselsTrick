@@ -7,18 +7,16 @@ void FMTTProcessor::apply_config() {
 }
 
 void FMTTProcessor::reload_model(const unsigned int entry) {
-  auto *modelnames = magicState.getObjectWithType<std::vector<std::string>>("modelnames");
-  if(!modelnames) return;
-  auto *modeldir = magicState.getObjectWithType<std::string>("modeldir");
-  if(!modeldir) return;
+  auto *guiconfig = magicState.getObjectWithType<PluginGUIConfig>("guiconfig");
+  if(!guiconfig) return;
 
   // Ensure entry is within range
-  if(entry > modelnames->size()) return;
+  if(entry > guiconfig->modelnames.size()) return;
   std::cout << "FMTTProcessor::reload_model() -  Loading "
-            << (*modelnames)[entry]
-            << "  - state: " << _guiconfig.nstates[entry] << std::endl;
+            << (guiconfig->modelnames)[entry]
+            << "  - state: " << guiconfig->nstates[entry] << std::endl;
 
-  load_gru_model((*modeldir) + "/" + _guiconfig.modelfilenames[entry], _guiconfig.nstates[entry]);
+  load_gru_model((guiconfig->modeldir) + "/" + guiconfig->modelfilenames[entry], guiconfig->nstates[entry]);
 
   std::cout << "\tContains patch:" << _model->contains_patch() << std::endl;
   if (_model->contains_patch()) {

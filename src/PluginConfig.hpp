@@ -4,12 +4,12 @@
 #include <string>
 #include <juce_audio_processors/juce_audio_processors.h>
 
-struct PluginEditorConfig
+struct PluginGUIConfig
 {
-    // Deprecated. All this should be reimplemented with valueTrees.
     std::vector<std::string> modelfilenames;    //Valid model filename list
-    //std::vector<std::string> modelnames;        //Valid modelname list
+    std::vector<std::string> modelnames;        //Valid modelname list
     std::vector<int> nstates;                   //Valid model statewidth list
+    std::string modeldir;                       //Directory listed for models
     int selectedid;                             //Selected id 
 };
 
