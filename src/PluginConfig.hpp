@@ -8,7 +8,7 @@ struct PluginEditorConfig
 {
     // Deprecated. All this should be reimplemented with valueTrees.
     std::vector<std::string> modelfilenames;    //Valid model filename list
-    std::vector<std::string> modelnames;        //Valid modelname list
+    //std::vector<std::string> modelnames;        //Valid modelname list
     std::vector<int> nstates;                   //Valid model statewidth list
     int selectedid;                             //Selected id 
 };
@@ -23,7 +23,7 @@ struct PluginConfig
     bool infinite_sustain;
     bool allow_model_reset;
     bool enableOSCOutput;
-    std::string model_path = "/Users/franco/aim/projs/vst/ddx7-vst/models/testmodels/testmodels";
+    //std::string model_path = "/Users/franco/aim/projs/vst/ddx7-vst/models/testmodels/testmodels";
     
     // FM Synth config
     std::array<float, 6> fm_ratios = {0};       //FM Ratios

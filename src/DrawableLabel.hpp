@@ -121,7 +121,9 @@ public:
             };
             combobox.clear(false);  // Remove all previous items
             int menu_idx = 1;
-            for (std::string menuentry : processor->_guiconfig.modelnames) 
+            auto *modelnames = magicBuilder.getMagicState().getObjectWithType<std::vector<std::string>>("modelnames");
+            if(!modelnames) return;
+            for (std::string menuentry : *modelnames) 
                 {
                 combobox.addItem(menuentry, menu_idx);
                 menu_idx++;

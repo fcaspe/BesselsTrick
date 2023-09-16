@@ -19,7 +19,6 @@ static juce::String fmRatios6{"knob_fr6"};
 // IDs for properties in ValueTree
 namespace IDs {
 static juce::String cboxselectedid{"cboxselectedid"};
-static juce::String modeldir{"modeldir"};
 static juce::String algorithm{"algorithm"};
 static juce::String fmRatios1{"fmratios1"};
 static juce::String fmRatios2{"fmratios2"};
@@ -105,49 +104,64 @@ void FMTTProcessor::updateAlgoPlot(const int algo_num) {
 
 void FMTTProcessor::setupValueTree()
 {
-  //std::cout << "[DEBUG] Setup Tree States" << std::endl;
-  //treeState.state.setProperty(juce::Identifier(IDs::modeldir),"",nullptr);
-  //treeState.state.setProperty(juce::Identifier(IDs::cboxselectedid),0,nullptr);
-  magicState.createAndAddObject<juce::var>("algorithm");
-  auto *alg = magicState.getObjectWithType<juce::var>("algorithm");
-  if(alg == nullptr)
-    std::cout << "[SETUP VAL TREE] Error creating Object";
-  else
+  if(auto *alg = magicState.createAndAddObject<juce::var>("algorithm"))
     *alg = 1;
+  else
+    std::cout << "[SETUP VAL TREE] Error creating Object: algorithm";
+
+  //std::vector<std::string> modelfilenames;    //Valid model filename list
+  //std::vector<std::string> modelnames;        //Valid modelname list
+  //std::vector<int> nstates;                   //Valid model statewidth list
+  //int selectedid;                             //Selected id 
+  
+  if(magicState.createAndAddObject<std::vector<std::string>>("modelnames"));
+  else
+    std::cout << "[SETUP VAL TREE] Error creating Object: modelnames";
+  
+  if(!magicState.getObjectWithType<std::string>("modeldir"))
+  if(auto *modeldir = magicState.createAndAddObject<std::string>("modeldir")){
+    *modeldir = "~/";}
+  else{
+    std::cout << "[SETUP VAL TREE] Error creating Object: modeldir";}
+  return;
+  
 }
 
 
 void FMTTProcessor::postSetStateInformation()
 {
-  //std::cout << "[postSetStateInformation] Recalling from treeState" << std::endl;
+  std::cout << "[postSetStateInformation] Recalling from treeState" << std::endl;
+  auto *modeldir = magicState.getObjectWithType<std::string>("modeldir");
+  if(modeldir) std::cout << "\tModeldir: " << *modeldir << std::endl;
+  if(builder_ptr) builder_ptr->findGuiItemWithId(GUI_IDs::models)->update();
   //int selected_model_id = treeState.state[juce::Identifier(IDs::cboxselectedid)];
-  //juce::String model_dir = treeState.state[juce::Identifier(IDs::modeldir)];
-  //_config.model_path = model_dir.toStdString();
   //loadModelList();
   //updateGUI();
 
 }
 
 void FMTTProcessor::showLoadDialog() {
-  if (builder_ptr == 0) return;
+  if (!builder_ptr) return;
+  auto *modeldir = magicState.getObjectWithType<std::string>("modeldir");
+  if(!modeldir) return;
+  std::cout << "Modeldir: " << *modeldir << std::endl;
   auto dialog = std::make_unique<foleys::FileBrowserDialog>(
       NEEDS_TRANS("Cancel"), NEEDS_TRANS("Load"),
       juce::FileBrowserComponent::openMode |
           juce::FileBrowserComponent::canSelectDirectories |
           juce::FileBrowserComponent::canSelectFiles,
-      juce::File(_config.model_path),
+      juce::File(*modeldir),
       std::make_unique<juce::WildcardFileFilter>("*.ts", "*",
                                                  NEEDS_TRANS("Model Files")));
-  dialog->setAcceptFunction([&, dlg = dialog.get()] {
+  dialog->setAcceptFunction([&, dlg = dialog.get(), modeldir] {
     auto file = dlg->getFile();
+    std::cout << "File: " << file.getFullPathName() << std::endl;
     if (file.getFileExtension().toStdString() == ".ts")
-      _config.model_path =
+      *modeldir =
           file.getParentDirectory().getFullPathName().toStdString();
     else
-      _config.model_path = file.getFullPathName().toStdString();
-    //treeState.state.setProperty(juce::Identifier(IDs::modeldir),
-    //                juce::var(_config.model_path),
-    //                nullptr);
+      *modeldir = file.getFullPathName().toStdString();
+
     loadModelList();
     builder_ptr->findGuiItemWithId(GUI_IDs::models)->update();
     builder_ptr->closeOverlayDialog();
@@ -163,14 +177,20 @@ void FMTTProcessor::showLoadDialog() {
 // Assumes a hidden GRU state of 128 for all models
 void FMTTProcessor::loadModelList() {
   _guiconfig.modelfilenames.clear();
-  _guiconfig.modelnames.clear();
+  auto *modelnames = magicState.getObjectWithType<std::vector<std::string>>("modelnames");
+  if(!modelnames) return;
+  auto *modeldir = magicState.getObjectWithType<std::string>("modeldir");
+  if(!modeldir) return;
+  
+  modelnames->clear();
   _guiconfig.nstates.clear();
-  juce::File f(_config.model_path);
+  juce::File f(*modeldir);
   auto modelList = f.findChildFiles(2, false, "*.ts");
+  std::cout << " Listing . . . " << std::endl;
   for (juce::File& file : modelList) {
     std::cout << " Listed " << file.getFileName() << std::endl;
     _guiconfig.modelfilenames.push_back(file.getFileName().toStdString());
-    _guiconfig.modelnames.push_back(
+    modelnames->push_back(
         file.getFileNameWithoutExtension().toStdString());
     _guiconfig.nstates.push_back(128);
   }

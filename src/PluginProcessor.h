@@ -61,7 +61,7 @@ class FMTTProcessor : public foleys::MagicProcessor,
   /* Model Routine Functions*/
   void load_gru_model(
       const std::string& model_filename);  // For standalone gru models
-  void load_gru_model(const std::string& model_filename, int n_state);
+  void load_gru_model(const std::string& model_path, int n_state);
   void apply_config();
   void reload_model(const unsigned int entry);
   // void handle_frs(int entry_id);
