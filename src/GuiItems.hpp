@@ -117,7 +117,9 @@ public:
                     proc->suspendProcessing(false);
                     if(auto *guiconfig = magicBuilder.getMagicState().getObjectWithType<PluginGUIConfig>("guiconfig"))
                         guiconfig->selectedid = combobox.getSelectedId();
-                magicBuilder.findGuiItemWithId("lbl_status")->update();
+                
+                auto *status_label = magicBuilder.findGuiItemWithId("lbl_status");
+                if(status_label) status_label->update();
                 }
 
             };
@@ -155,7 +157,6 @@ public:
 
     StatusBarItem (foleys::MagicGUIBuilder& builder, const juce::ValueTree& node) : foleys::GuiItem (builder, node)
     {
-        update_status_message();
         addAndMakeVisible (label);
     }
 
