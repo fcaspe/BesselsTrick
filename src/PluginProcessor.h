@@ -86,7 +86,9 @@ class FMTTProcessor : public foleys::MagicProcessor,
   // overriding createEditor() (which in practice should not be declared by
   // plugin)
   foleys::MagicGUIBuilder* builder_ptr = 0;
-  foleys::MagicLevelSource* outputLevel{nullptr};
+  foleys::MagicLevelSource* _input_rms_meter{nullptr};
+  foleys::MagicLevelSource* _input_f0_meter{nullptr};
+  foleys::MagicLevelSource* _output_meter{nullptr};
   juce::LookAndFeel_V1 plotLookAndFeel;
   //==============================================================================
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(FMTTProcessor)

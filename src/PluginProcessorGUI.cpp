@@ -59,8 +59,18 @@ void FMTTProcessor::initialiseBuilder(foleys::MagicGUIBuilder& builder) {
 }
 
 void FMTTProcessor::setupMeters() {
-  outputLevel =
-      magicState.createAndAddObject<foleys::MagicLevelSource>("level");
+  _input_rms_meter =
+    magicState.createAndAddObject<foleys::MagicLevelSource>("input_rms");
+  if(_input_rms_meter)
+    _input_rms_meter->setupSource(1,getSampleRate()/getBlockSize(),100);
+  _input_f0_meter =
+    magicState.createAndAddObject<foleys::MagicLevelSource>("input_f0");
+  if(_input_f0_meter)
+    _input_f0_meter->setupSource(1,getSampleRate()/getBlockSize(),100);
+  _output_meter =
+    magicState.createAndAddObject<foleys::MagicLevelSource>("output_level");
+  if(_output_meter)
+    _output_meter->setupSource(1,getSampleRate(),100);
 }
 
 /**

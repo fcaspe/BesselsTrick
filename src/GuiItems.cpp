@@ -25,9 +25,6 @@ void DrawableLabel::paint (juce::Graphics& g)
                             _algoplots[_algorithm-1],
                             _algoplotSizes[_algorithm-1]);
 
-    std::cout << "paint: x " << getX() << " y " << getY() << " width " \
-    << getWidth() << " height " << getHeight() << " img width " << myImage.getWidth() \
-    << " img height " << myImage.getHeight() << std::endl;
     g.drawImage(myImage,0,0,getWidth(),getHeight(),
                 0,0,myImage.getWidth(),myImage.getHeight());
 }

@@ -164,8 +164,6 @@ void FMTTProcessor::processBlock(juce::AudioBuffer<float>& buffer,
   /* Step4: Render audio */
   float* renderer_buffer = _fmsynth->render(pitch * _config.pitch_ratio, fm_ol);
 
-  /* Step5: Update Meters*/
-  if (outputLevel) outputLevel->pushSamples(buffer);
   // RMS FEEDBACK
   // rms_norm_feedback = _rms_processor_feedback->process(renderer_buffer);
 
@@ -185,6 +183,22 @@ void FMTTProcessor::processBlock(juce::AudioBuffer<float>& buffer,
       }
     }
   }
+
+  /* Step6: Update Meters*/
+  if (_input_rms_meter)
+    {
+      auto input_buffer = juce::AudioBuffer<float>(1,1);
+      input_buffer.getWritePointer(0)[0] = rms_in;
+      _input_rms_meter->pushSamples(input_buffer);
+    }
+  if (_input_f0_meter)
+    {
+      auto input_buffer = juce::AudioBuffer<float>(1,1);
+      input_buffer.getWritePointer(0)[0] = pitch_norm;
+      _input_f0_meter->pushSamples(input_buffer);
+    }
+  if (_output_meter) _output_meter->pushSamples(buffer);
+
 }
 
 /**
@@ -214,7 +228,6 @@ void FMTTProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
     _pitch_tracker->init(sampleRate, YIN_WINDOW, samplesPerBlock,
                          0.15f, // Threshold
                          false); // Downsample x2
-  if (outputLevel) outputLevel->setNumChannels(2);
 }
 
 //==============================================================================
