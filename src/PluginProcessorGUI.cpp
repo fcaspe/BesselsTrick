@@ -5,6 +5,7 @@
 
 // ID's for objects in GUI
 namespace GUI_IDs {
+static juce::String status{"lbl_status"};
 static juce::String models{"combobox_models"};
 static juce::String algorithm{"knob_algo"};
 static juce::String algoplot{"label_algo"};
@@ -52,6 +53,7 @@ void FMTTProcessor::initialiseBuilder(foleys::MagicGUIBuilder& builder) {
   
   builder.registerFactory("DrawableLabel", &DrawableLabelItem::factory);
   builder.registerFactory("ModelComboBox", &ModelComboBoxItem::factory);
+  builder.registerFactory("StatusBar", &StatusBarItem::factory);
   
   // Workaround to fetch builder from MagicPlugin without
   // overriding createEditor() (which should not be declared by plugin)
@@ -136,6 +138,7 @@ void FMTTProcessor::postSetStateInformation()
   auto *guiconfig = magicState.getObjectWithType<PluginGUIConfig>("guiconfig");
   if(guiconfig) std::cout << "\tModeldir: " << guiconfig->modeldir << std::endl;
   if(builder_ptr) builder_ptr->findGuiItemWithId(GUI_IDs::models)->update();
+  if(builder_ptr) builder_ptr->findGuiItemWithId(GUI_IDs::status)->update();
 
 }
 
@@ -161,6 +164,7 @@ void FMTTProcessor::showLoadDialog() {
       guiconfig->modeldir = file.getFullPathName().toStdString();
 
     loadModelList();
+    builder_ptr->findGuiItemWithId(GUI_IDs::status)->update();
     builder_ptr->findGuiItemWithId(GUI_IDs::models)->update();
     builder_ptr->closeOverlayDialog();
   });

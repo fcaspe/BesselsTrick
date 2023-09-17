@@ -10,6 +10,7 @@ struct PluginGUIConfig
     std::vector<std::string> modelnames;        //Valid modelname list
     std::vector<int> nstates;                   //Valid model statewidth list
     std::string modeldir = "~/";                //Directory listed for models
+    std::string status = "";                    //Message from Status Label
     int selectedid;                             //Selected id 
 };
 

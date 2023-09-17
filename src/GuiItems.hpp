@@ -98,7 +98,6 @@ public:
 
     ModelComboBoxItem (foleys::MagicGUIBuilder& builder, const juce::ValueTree& node) : foleys::GuiItem (builder, node)
     {
-
         addAndMakeVisible (combobox);
     }
 
@@ -118,6 +117,7 @@ public:
                     proc->suspendProcessing(false);
                     if(auto *guiconfig = magicBuilder.getMagicState().getObjectWithType<PluginGUIConfig>("guiconfig"))
                         guiconfig->selectedid = combobox.getSelectedId();
+                magicBuilder.findGuiItemWithId("lbl_status")->update();
                 }
 
             };
@@ -125,12 +125,13 @@ public:
             int menu_idx = 1;
             auto *guiconfig = magicBuilder.getMagicState().getObjectWithType<PluginGUIConfig>("guiconfig");
             if(!guiconfig) return;
+            // Update ComboBox entries
             for (std::string menuentry : guiconfig->modelnames) 
                 {
                 combobox.addItem(menuentry, menu_idx);
                 menu_idx++;
                 }
-            combobox.setSelectedId(guiconfig->selectedid,juce::dontSendNotification);  // Select first item
+            combobox.setSelectedId(guiconfig->selectedid,juce::sendNotificationSync);  // Select first item
             }
     }
 
@@ -143,4 +144,61 @@ private:
     juce::ComboBox combobox;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ModelComboBoxItem)
+};
+
+
+// This class is creating and configuring your custom component
+class StatusBarItem : public foleys::GuiItem
+{
+public:
+    FOLEYS_DECLARE_GUI_FACTORY (StatusBarItem)
+
+    StatusBarItem (foleys::MagicGUIBuilder& builder, const juce::ValueTree& node) : foleys::GuiItem (builder, node)
+    {
+        update_status_message();
+        addAndMakeVisible (label);
+    }
+
+   void update_status_message()
+    {
+    if (auto* processor = dynamic_cast<FMTTProcessor*>(magicBuilder.getMagicState().getProcessor()))
+    {
+        auto *guiconfig = magicBuilder.getMagicState().getObjectWithType<PluginGUIConfig>("guiconfig");
+        if(guiconfig)
+        {
+            // Update Status message
+            if(guiconfig->modelnames.size()== 0)
+            {
+                guiconfig->status = "Empty model list. Open pretrained directory.";
+            }
+            else
+            {
+                // Check if a model is loaded
+                if(processor->_model.get() == nullptr)
+                    guiconfig->status = "Select a model from list.";
+                else
+                    guiconfig->status = "Ready to play!";       
+            }
+        }
+    }
+    return;
+    }
+
+    // Sets label callback and updates model list.
+    void update() override
+    {
+        update_status_message();
+        auto *guiconfig = magicBuilder.getMagicState().getObjectWithType<PluginGUIConfig>("guiconfig");
+        if(!guiconfig) return;
+        label.setText(guiconfig->status,juce::dontSendNotification);
+    }
+    juce::Component* getWrappedComponent() override
+    {
+        return &label;
+    }
+
+private:
+    juce::Label label;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StatusBarItem)
 };
