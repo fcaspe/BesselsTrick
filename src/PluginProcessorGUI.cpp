@@ -8,6 +8,8 @@ namespace GUI_IDs {
 static juce::String models{"combobox_models"};
 static juce::String algorithm{"knob_algo"};
 static juce::String algoplot{"label_algo"};
+static juce::String inGain{"knob_input_gain"};
+static juce::String outGain{"knob_output_gain"};
 static juce::String fmRatios1{"knob_fr1"};
 static juce::String fmRatios2{"knob_fr2"};
 static juce::String fmRatios3{"knob_fr3"};
@@ -19,6 +21,8 @@ static juce::String fmRatios6{"knob_fr6"};
 // IDs for properties in ValueTree
 namespace IDs {
 static juce::String cboxselectedid{"cboxselectedid"};
+static juce::String inGain{"in_gain"};
+static juce::String outGain{"out_gain"};
 static juce::String algorithm{"algorithm"};
 static juce::String fmRatios1{"fmratios1"};
 static juce::String fmRatios2{"fmratios2"};
@@ -211,6 +215,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
           juce::ParameterID(IDs::fmRatios6, 1), "OP6",
           juce::NormalisableRange<float>(0.5f, 20.0f, 0.01f), 1.0f));
 
+  auto gain = std::make_unique<juce::AudioProcessorParameterGroup>(
+      "Gain", TRANS("Gain"), "|");
+  gain->addChild(
+      std::make_unique<juce::AudioParameterInt>(
+          juce::ParameterID(IDs::inGain, 1), "Input Gain", -12, 12, 0),
+      std::make_unique<juce::AudioParameterInt>(
+          juce::ParameterID(IDs::outGain, 1), "Output Gain", -12, 12, 0));
+
   auto debug = std::make_unique<juce::AudioProcessorParameterGroup>(
       "Debug", TRANS("Debug"), "|");
   debug->addChild(
@@ -230,7 +242,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
           juce::ParameterID(IDs::debug8, 1), "Enable FeatReg", 0, 1, 0),
       std::make_unique<juce::AudioParameterInt>(
           juce::ParameterID(IDs::debug9, 1), "FeatReg Mode", 0, 1, 0));
-  layout.add(std::move(algorithm), std::move(ratios), std::move(debug));
+  layout.add(std::move(algorithm), std::move(ratios),std::move(gain), std::move(debug));
 
   return layout;
 }

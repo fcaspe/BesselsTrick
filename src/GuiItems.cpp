@@ -19,16 +19,16 @@ void DrawableLabel::setAlgorithm(int number)
 
 void DrawableLabel::paint (juce::Graphics& g)
 {
-    const float radius = std::min (getWidth(), getHeight()) * 0.4f;
-    const auto  centre = getLocalBounds().getCentre().toFloat();
-
     juce::Image myImage;
     
     myImage = juce::ImageFileFormat::loadFrom(
                             _algoplots[_algorithm-1],
                             _algoplotSizes[_algorithm-1]);
 
-    g.drawImage(myImage,getX(),getY(),getWidth(),getHeight(),
+    std::cout << "paint: x " << getX() << " y " << getY() << " width " \
+    << getWidth() << " height " << getHeight() << " img width " << myImage.getWidth() \
+    << " img height " << myImage.getHeight() << std::endl;
+    g.drawImage(myImage,0,0,getWidth(),getHeight(),
                 0,0,myImage.getWidth(),myImage.getHeight());
 }
 

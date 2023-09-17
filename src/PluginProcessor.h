@@ -5,7 +5,7 @@
 #include <juce_osc/juce_osc.h>
 
 #include "BinaryData.h"
-#include "DDSPModels.hpp"
+#include "DynamicModels.hpp"
 #include "FMSynth.hpp"
 #include "FeatureRegister.hpp"
 #include "RMSProcessor.hpp"

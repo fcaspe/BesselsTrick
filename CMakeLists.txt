@@ -122,7 +122,7 @@ target_sources(BesselsTrick PRIVATE
     src/PluginProcessorGUI.cpp
     src/PluginProcessorModelRoutines.cpp
     src/TorchInference.cpp
-    src/DDSPModels.cpp
+    src/DynamicModels.cpp
     src/FMSynth.cpp
     src/RMSProcessor.cpp
     src/Yin.cpp
@@ -154,14 +154,14 @@ target_compile_definitions(BesselsTrick
 juce_add_binary_data(${PROJECT_NAME}_data
                     SOURCES
                     resources/magic_bake.xml
-                    resources/algo_1.png  resources/algo_2.png  resources/algo_3.png  resources/algo_4.png
-                    resources/algo_5.png  resources/algo_6.png  resources/algo_7.png  resources/algo_8.png
-                    resources/algo_9.png  resources/algo_10.png resources/algo_11.png resources/algo_12.png
-                    resources/algo_13.png resources/algo_14.png resources/algo_15.png resources/algo_16.png
-                    resources/algo_17.png resources/algo_18.png resources/algo_19.png resources/algo_20.png
-                    resources/algo_21.png resources/algo_22.png resources/algo_23.png resources/algo_24.png
-                    resources/algo_25.png resources/algo_26.png resources/algo_27.png resources/algo_28.png
-                    resources/algo_29.png resources/algo_30.png resources/algo_31.png resources/algo_32.png)
+                    resources/img/algo_1.png  resources/img/algo_2.png  resources/img/algo_3.png  resources/img/algo_4.png
+                    resources/img/algo_5.png  resources/img/algo_6.png  resources/img/algo_7.png  resources/img/algo_8.png
+                    resources/img/algo_9.png  resources/img/algo_10.png resources/img/algo_11.png resources/img/algo_12.png
+                    resources/img/algo_13.png resources/img/algo_14.png resources/img/algo_15.png resources/img/algo_16.png
+                    resources/img/algo_17.png resources/img/algo_18.png resources/img/algo_19.png resources/img/algo_20.png
+                    resources/img/algo_21.png resources/img/algo_22.png resources/img/algo_23.png resources/img/algo_24.png
+                    resources/img/algo_25.png resources/img/algo_26.png resources/img/algo_27.png resources/img/algo_28.png
+                    resources/img/algo_29.png resources/img/algo_30.png resources/img/algo_31.png resources/img/algo_32.png)
 
 # `target_link_libraries` links libraries and JUCE modules to other libraries or executables. Here,
 # we're linking our executable target to the `juce::juce_audio_utils` module. Inter-module
