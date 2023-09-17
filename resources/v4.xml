@@ -123,7 +123,7 @@
               max-width="100" pos-x="" pos-y="" pos-width="" pos-height=""
               id="output_view" flex-direction="column" caption="" margin="5"
               padding="1" background-color="FF12083D">
-          <Slider slider-textbox="no-textbox" parameter="in_gain" max-height="100"
+          <Slider slider-textbox="no-textbox" parameter="out_gain" max-height="100"
                   caption="Out Gain" caption-placement="centred-bottom" background-color="FF12083D"/>
           <View class="nomargin" background-color="FF12083D">
             <Meter source="output_level" caption="" background-color="FF12083D"

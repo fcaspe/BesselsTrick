@@ -19,6 +19,8 @@ struct PluginConfig
     float yin_threshold;
     float rms_clamp_value;
     float feedback_level;
+    float in_gain;
+    float out_gain;
     bool portamento;
     bool infinite_sustain;
     bool allow_model_reset;
@@ -38,6 +40,8 @@ struct PluginConfig
         pitch_ratio = 1.0f;
         yin_threshold = 0.15f;
         feedback_level = 0.0f;
+        in_gain = 1.0f;
+        out_gain = 1.0f;
         portamento = false;
         infinite_sustain = false;
         allow_model_reset = true;

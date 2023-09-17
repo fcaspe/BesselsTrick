@@ -64,13 +64,11 @@ float RMS_Processor::process(const float* frame)
         if (acc < 1e-20f) acc = 1e-20f; //Avoid log instabilities
         float rms_squared_db = 20.0*log10f(acc);
         //std::cout << "acc = " << acc << " rms_squared_db = " << rms_squared_db << std::endl;
+        
         /* Normalize */
-        // a * rms +  b = rms_norm; a = 1/60, b = 4/3
-        //rms_squared_db += _REF_DB;
+        // rms_norm = a * rms +  b; -> a = 1/60, b = 4/3
         if(rms_squared_db < -_DB_RANGE) rms_squared_db = -_DB_RANGE;
 
-        /* Scale [-DB_RANGE, 0] to [0, 1]. */
-        //return (rms_squared_db / _DB_RANGE) + 1.0f;
         return (a_rms * rms_squared_db + b_rms);
         }
     

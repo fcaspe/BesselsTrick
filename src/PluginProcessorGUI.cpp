@@ -267,6 +267,9 @@ void FMTTProcessor::configure_gui_listeners() {
   treeState.addParameterListener(IDs::fmRatios5, this);
   treeState.addParameterListener(IDs::fmRatios6, this);
 
+  treeState.addParameterListener(IDs::inGain, this);
+  treeState.addParameterListener(IDs::outGain, this);
+
   treeState.addParameterListener(IDs::debug1, this);
   treeState.addParameterListener(IDs::debug2, this);
   treeState.addParameterListener(IDs::debug3, this);
@@ -295,6 +298,11 @@ void FMTTProcessor::parameterChanged(const juce::String& param, float value) {
     _config.fm_ratios[4] = value;
   else if (param == IDs::fmRatios6)
     _config.fm_ratios[5] = value;
+  // Gain Values
+  else if (param == IDs::inGain)
+    _config.in_gain = powf(10,value/20.0f);
+  else if (param == IDs::outGain)
+    _config.out_gain = powf(10,value/20.0f);
   // Debug Configuration
   else if (param == IDs::debug1)
     _config.enableConsoleOutput = (value != 0.0f);

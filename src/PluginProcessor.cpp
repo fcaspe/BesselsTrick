@@ -86,16 +86,23 @@ void FMTTProcessor::processBlock(juce::AudioBuffer<float>& buffer,
   juce::ignoreUnused(midiMessages);
 
   constexpr int input_ch = 0;  // Use Channel 0 as input
-  const float* raw_input = buffer.getReadPointer(input_ch);
 
   // Feedback
+  // float* raw_input = buffer.getReadPointer(input_ch);
   //for (auto sample = 0; sample < buffer.getNumSamples(); sample++) {
   // _feedbackBuffer[sample] =
   //      raw_input[sample] + _feedbackBuffer[sample] * _config.feedback_level;
   //}
   //const float* audio_input = _feedbackBuffer.data();
+
+  // Input Gain
+  float* input_read_ptr = buffer.getWritePointer(input_ch);
+  for (auto sample = 0; sample < buffer.getNumSamples(); sample++) {
+    input_read_ptr[sample] = input_read_ptr[sample] * _config.in_gain;
+  }
+
   const float* audio_input = buffer.getReadPointer(input_ch);
-  
+
   // RMS
   float rms_in = _rms_processor->process(audio_input);
 
@@ -174,7 +181,7 @@ void FMTTProcessor::processBlock(juce::AudioBuffer<float>& buffer,
       // Clear buffer with input audio.
       buffer.clear(i, 0, buffer.getNumSamples());
       for (auto sample = 0; sample < buffer.getNumSamples(); sample++) {
-        channelData[sample] = renderer_buffer[sample];
+        channelData[sample] = renderer_buffer[sample] * _config.out_gain;
         //_feedbackBuffer[sample] = renderer_buffer[sample];
       }
     } else {
@@ -188,13 +195,15 @@ void FMTTProcessor::processBlock(juce::AudioBuffer<float>& buffer,
   if (_input_rms_meter)
     {
       auto input_buffer = juce::AudioBuffer<float>(1,1);
-      input_buffer.getWritePointer(0)[0] = rms_in;
+      //Denormalize rms before feeding into meter
+      input_buffer.getWritePointer(0)[0] = powf(20,((rms_in-1.33f)*60.0f)/20.0f);
       _input_rms_meter->pushSamples(input_buffer);
     }
   if (_input_f0_meter)
     {
       auto input_buffer = juce::AudioBuffer<float>(1,1);
-      input_buffer.getWritePointer(0)[0] = pitch_norm;
+      // Scale pitch for feeding into meter
+      input_buffer.getWritePointer(0)[0] = pitch > 3000? 1.0 : pitch/3000 ;
       _input_f0_meter->pushSamples(input_buffer);
     }
   if (_output_meter) _output_meter->pushSamples(buffer);
