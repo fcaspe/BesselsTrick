@@ -232,7 +232,10 @@ void FMTTProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
                          samplesPerBlock);  // Block size
 
   /* Init Pitch Tracker */
-  const int YIN_WINDOW = 1024;
+  
+  // Minimum f0: 2*(sr/yinwindow)
+  //const int YIN_WINDOW = 512; //173Hz @ 44.1kHz
+  const int YIN_WINDOW = 1280; //69Hz @ 44.1kHz
   if (_pitch_tracker)
     _pitch_tracker->init(sampleRate, YIN_WINDOW, samplesPerBlock,
                          0.15f, // Threshold

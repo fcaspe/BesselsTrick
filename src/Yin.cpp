@@ -145,7 +145,7 @@ void Yin::updateBuffer(const float *frame) {
   // std::cout << "\n writeidx start: " << _writeIdx << std::endl;
   const int downsampleFactor = _downsample_x2 ? 2 : 1;
   for (int i = 0; i < _frameSize/downsampleFactor; i++) {
-    const int idx = (i + _writeIdx) & (_bufferSize - 1);
+    const int idx = (i + _writeIdx) % _bufferSize;
     
     if(_downsample_x2)
       _audioBuffer[idx] = _input_gain * (frame[2*i] + frame[2*i+1]) / 2.0f;
@@ -154,7 +154,7 @@ void Yin::updateBuffer(const float *frame) {
     // std::cout << idx << " ";
     // std::cout << _audioBuffer[idx] << " ";
   }
-  _writeIdx = (_writeIdx + (_frameSize/downsampleFactor)) & (_bufferSize - 1);
+  _writeIdx = (_writeIdx + (_frameSize/downsampleFactor)) % _bufferSize;
   // std::cout << "\n writeidx end: " << _writeIdx << std::endl;
 }
 
@@ -167,8 +167,8 @@ void Yin::difference() {
     // std::cout << "\ndly " << tau << std::endl;
     for (index = 0; index < _halfBufferSize; index++) {
       /*Compute indexes for circular buffer.*/
-      const int idx = (index + _writeIdx) & (_bufferSize - 1);
-      const int idx_plus_tau = (idx + tau) & (_bufferSize - 1);
+      const int idx = (index + _writeIdx) % _bufferSize;
+      const int idx_plus_tau = (idx + tau) % _bufferSize;
       // std::cout << " " << idx << " - " << idx_plus_tau << " ";
       // std::cout << "(" << _audioBuffer[idx] << ")" << "[" <<
       // _audioBuffer[idx_plus_tau] << "] ";
