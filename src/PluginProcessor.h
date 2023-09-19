@@ -10,6 +10,7 @@
 #include "FeatureRegister.hpp"
 #include "RMSProcessor.hpp"
 #include "Yin.hpp"
+#include "PitchTrackManager.hpp"
 
 // Move to static method
 juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
@@ -72,7 +73,8 @@ class FMTTProcessor : public foleys::MagicProcessor,
   juce::AudioProcessLoadMeasurer _load_measurer;  // Load measurer
   std::unique_ptr<FMSynth> _fmsynth;              // Synth.
   std::unique_ptr<DDSPModel> _model;  // Resynthesis Model wrapper pointer.
-  std::unique_ptr<Yin> _pitch_tracker;
+  //std::unique_ptr<Yin> _pitch_tracker;
+  PitchTrackManager<4> _tracker_manager;
   std::unique_ptr<RMS_Processor> _rms_processor;
   // std::unique_ptr<RMS_Processor> _rms_processor_feedback;
   PluginConfig _config;

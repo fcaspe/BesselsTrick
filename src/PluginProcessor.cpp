@@ -17,7 +17,8 @@ FMTTProcessor::FMTTProcessor()
   // Main Plugin Setup Tasks come here.
 
   // 1. Create new class members.
-  _pitch_tracker.reset(new Yin());
+  //_pitch_tracker.reset(new Yin());
+  _tracker_manager.create();
   _rms_processor.reset(new RMS_Processor());
   //_rms_processor_feedback.reset(new RMS_Processor());
   _fmsynth.reset(new FMSynth());
@@ -51,7 +52,8 @@ FMTTProcessor::~FMTTProcessor() {
   _fmsynth.reset();
   _model.reset();
   _rms_processor.reset();
-  _pitch_tracker.reset();
+  //_pitch_tracker.reset();
+  _tracker_manager.reset();
 }
 
 inline float normalize_pitch(float pitch) {
@@ -107,9 +109,9 @@ void FMTTProcessor::processBlock(juce::AudioBuffer<float>& buffer,
   float rms_in = _rms_processor->process(audio_input);
 
   // PITCH
-  _pitch_tracker->updateBuffer(audio_input);
-  float pitch = _pitch_tracker->getPitch();
-  float prob = _pitch_tracker->getProbability();
+  _tracker_manager.updateBuffer(audio_input);
+  float pitch = _tracker_manager.getPitch();
+  //float prob = _pitch_tracker->getProbability();
   float pitch_norm = normalize_pitch(pitch);
 
   // Run Feature Register
@@ -146,7 +148,7 @@ void FMTTProcessor::processBlock(juce::AudioBuffer<float>& buffer,
     juce::OSCMessage msg1("/f0ld");
     msg1.addFloat32(pitch_norm);
     msg1.addFloat32(rms_in);
-    msg1.addFloat32(prob);
+    msg1.addFloat32(0.0f); //Probability placeholder
     _osc_sender.send(msg1);
 
     // send envelopes over osc.
@@ -236,10 +238,11 @@ void FMTTProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
   // Minimum f0: 2*(sr/yinwindow)
   //const int YIN_WINDOW = 512; //173Hz @ 44.1kHz
   const int YIN_WINDOW = 1280; //69Hz @ 44.1kHz
-  if (_pitch_tracker)
-    _pitch_tracker->init(sampleRate, YIN_WINDOW, samplesPerBlock,
-                         0.15f, // Threshold
-                         false); // Downsample x2
+  const std::array<int,4> yin_windows = {256,512,1024,1280};
+  const std::array<bool,4> yin_downsample = {false,false,false,false};
+  _tracker_manager.init(sampleRate, yin_windows, samplesPerBlock,
+                        0.15f, // Threshold
+                        yin_downsample); // Downsample x2
 }
 
 //==============================================================================

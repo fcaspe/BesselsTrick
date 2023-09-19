@@ -3,7 +3,8 @@
 void FMTTProcessor::apply_config() {
   _fmsynth->set_config(_config.fm_config);
   _fmsynth->set_ratios(_config.fm_ratios);
-  _pitch_tracker->setThreshold(_config.yin_threshold);
+  //_pitch_tracker->setThreshold(_config.yin_threshold);
+  _tracker_manager.setThreshold(_config.yin_threshold);
 }
 
 void FMTTProcessor::reload_model(const unsigned int entry) {
