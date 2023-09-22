@@ -17,6 +17,12 @@ static juce::String fmRatios3{"knob_fr3"};
 static juce::String fmRatios4{"knob_fr4"};
 static juce::String fmRatios5{"knob_fr5"};
 static juce::String fmRatios6{"knob_fr6"};
+static juce::String fmBoost1{"knob_boost1"};
+static juce::String fmBoost2{"knob_boost2"};
+static juce::String fmBoost3{"knob_boost3"};
+static juce::String fmBoost4{"knob_boost4"};
+static juce::String fmBoost5{"knob_boost5"};
+static juce::String fmBoost6{"knob_boost6"};
 }  // namespace GUI_IDs
 
 // IDs for properties in ValueTree
@@ -31,6 +37,12 @@ static juce::String fmRatios3{"fmratios3"};
 static juce::String fmRatios4{"fmratios4"};
 static juce::String fmRatios5{"fmratios5"};
 static juce::String fmRatios6{"fmratios6"};
+static juce::String fmBoost1{"boost1"};
+static juce::String fmBoost2{"boost2"};
+static juce::String fmBoost3{"boost3"};
+static juce::String fmBoost4{"boost4"};
+static juce::String fmBoost5{"boost5"};
+static juce::String fmBoost6{"boost6"};
 static juce::String debug1{"debug1"};
 static juce::String debug2{"debug2"};
 static juce::String debug3{"debug3"};
@@ -229,6 +241,22 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
           juce::ParameterID(IDs::fmRatios6, 1), "OP6",
           juce::NormalisableRange<float>(0.5f, 20.0f, 0.01f), 1.0f));
 
+  auto boost = std::make_unique<juce::AudioProcessorParameterGroup>(
+      "FM Oscillator Boost", TRANS("Oscillator Level Boost"), "|");
+  boost->addChild(
+      std::make_unique<juce::AudioParameterInt>(
+          juce::ParameterID(IDs::fmBoost1, 1), "OSC1 Boost", -12, 12, 0),
+      std::make_unique<juce::AudioParameterInt>(
+          juce::ParameterID(IDs::fmBoost2, 1), "OSC2 Boost", -12, 12, 0),
+      std::make_unique<juce::AudioParameterInt>(
+          juce::ParameterID(IDs::fmBoost3, 1), "OSC3 Boost", -12, 12, 0),
+      std::make_unique<juce::AudioParameterInt>(
+          juce::ParameterID(IDs::fmBoost4, 1), "OSC4 Boost", -12, 12, 0),
+      std::make_unique<juce::AudioParameterInt>(
+          juce::ParameterID(IDs::fmBoost5, 1), "OSC5 Boost", -12, 12, 0),
+      std::make_unique<juce::AudioParameterInt>(
+          juce::ParameterID(IDs::fmBoost6, 1), "OSC6 Boost", -12, 12, 0));
+
   auto gain = std::make_unique<juce::AudioProcessorParameterGroup>(
       "Gain", TRANS("Gain"), "|");
   gain->addChild(
@@ -256,7 +284,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
           juce::ParameterID(IDs::debug8, 1), "Enable FeatReg", 0, 1, 0),
       std::make_unique<juce::AudioParameterInt>(
           juce::ParameterID(IDs::debug9, 1), "FeatReg Mode", 0, 1, 0));
-  layout.add(std::move(algorithm), std::move(ratios),std::move(gain), std::move(debug));
+  
+  layout.add(std::move(algorithm), std::move(ratios),
+            std::move(boost), std::move(gain), std::move(debug));
 
   return layout;
 }
@@ -270,6 +300,13 @@ void FMTTProcessor::configure_gui_listeners() {
   treeState.addParameterListener(IDs::fmRatios4, this);
   treeState.addParameterListener(IDs::fmRatios5, this);
   treeState.addParameterListener(IDs::fmRatios6, this);
+
+  treeState.addParameterListener(IDs::fmBoost1, this);
+  treeState.addParameterListener(IDs::fmBoost2, this);
+  treeState.addParameterListener(IDs::fmBoost3, this);
+  treeState.addParameterListener(IDs::fmBoost4, this);
+  treeState.addParameterListener(IDs::fmBoost5, this);
+  treeState.addParameterListener(IDs::fmBoost6, this);
 
   treeState.addParameterListener(IDs::inGain, this);
   treeState.addParameterListener(IDs::outGain, this);
@@ -290,23 +327,26 @@ void FMTTProcessor::parameterChanged(const juce::String& param, float value) {
   if (param == IDs::algorithm) {
     _config.fm_config = (int)value - 1;
     updateAlgoPlot(int(value));
-  } else if (param == IDs::fmRatios1)
-    _config.fm_ratios[0] = value;
-  else if (param == IDs::fmRatios2)
-    _config.fm_ratios[1] = value;
-  else if (param == IDs::fmRatios3)
-    _config.fm_ratios[2] = value;
-  else if (param == IDs::fmRatios4)
-    _config.fm_ratios[3] = value;
-  else if (param == IDs::fmRatios5)
-    _config.fm_ratios[4] = value;
-  else if (param == IDs::fmRatios6)
-    _config.fm_ratios[5] = value;
+  } 
+  // FM Ratios
+  else if (param == IDs::fmRatios1) _config.fm_ratios[0] = value;
+  else if (param == IDs::fmRatios2) _config.fm_ratios[1] = value;
+  else if (param == IDs::fmRatios3) _config.fm_ratios[2] = value;
+  else if (param == IDs::fmRatios4) _config.fm_ratios[3] = value;
+  else if (param == IDs::fmRatios5) _config.fm_ratios[4] = value;
+  else if (param == IDs::fmRatios6) _config.fm_ratios[5] = value;
+
+  // FM Oscillator Boost
+  else if (param == IDs::fmBoost1) _config.fm_boost[0] = powf(10,value/20.0f);
+  else if (param == IDs::fmBoost2) _config.fm_boost[1] = powf(10,value/20.0f);
+  else if (param == IDs::fmBoost3) _config.fm_boost[2] = powf(10,value/20.0f);
+  else if (param == IDs::fmBoost4) _config.fm_boost[3] = powf(10,value/20.0f);
+  else if (param == IDs::fmBoost5) _config.fm_boost[4] = powf(10,value/20.0f);
+  else if (param == IDs::fmBoost6) _config.fm_boost[5] = powf(10,value/20.0f);
+
   // Gain Values
-  else if (param == IDs::inGain)
-    _config.in_gain = powf(10,value/20.0f);
-  else if (param == IDs::outGain)
-    _config.out_gain = powf(10,value/20.0f);
+  else if (param == IDs::inGain)  _config.in_gain = powf(10,value/20.0f);
+  else if (param == IDs::outGain) _config.out_gain = powf(10,value/20.0f);
   // Debug Configuration
   else if (param == IDs::debug1)
     _config.enableConsoleOutput = (value != 0.0f);

@@ -79,43 +79,106 @@
                   margin="5" padding="5" tab-height="25">
               <View flex-wrap="nowrap" class="nomargin" background-color="FF12083D"
                     caption-size="" tab-caption="1" caption="" caption-placement=""
-                    tab-color="FF12083D" pos-x="" pos-y="" pos-height="" pos-width="">
-                <Slider caption="Coarse" parameter="coarse1" id="knob_coarse1" background-color="FF12083D"
-                        lookAndFeel="FoleysFinest" tab-color="" background-gradient=""
-                        background-alpha=""/>
-                <Slider caption="Fine" parameter="fine1" id="knob_fine1" background-color="FF12083D"/>
-                <Slider caption="Boost" parameter="boost1" id="knob_boost1" background-color="FF12083D"/>
+                    tab-color="FF12083D" pos-x="" pos-y="" pos-height="" pos-width=""
+                    flex-direction="column">
+                <View class="nomargin" id="knobs_osc1" background-color="FF12083D">
+                  <Slider caption="Coarse" parameter="coarse1" id="knob_coarse1" background-color="FF12083D"
+                          lookAndFeel="FoleysFinest" tab-color="" background-gradient=""
+                          background-alpha="" slider-textbox="no-textbox"/>
+                  <Slider caption="Fine" parameter="fine1" id="knob_fine1" background-color="FF12083D"
+                          slider-textbox="no-textbox"/>
+                  <Slider caption="Boost" parameter="boost1" id="knob_boost1" background-color="FF12083D"
+                          slider-textbox="no-textbox"/>
+                </View>
+                <Label max-height="40" id="fr1_label" background-color="FF12083D" text="14.0"
+                       font-size="15" justification="centred"/>
               </View>
+              
               <View flex-wrap="nowrap" class="nomargin" background-color="FF12083D"
-                    caption-placement="" caption="" tab-caption="2" tab-color="FF12083D">
-                <Slider caption="Coarse" parameter="coarse2" id="knob_coarse2" background-color="FF12083D"/>
-                <Slider caption="Fine" parameter="fine2" id="knob_fine2" background-color="FF12083D"/>
-                <Slider caption="Boost" parameter="boost2" id="knob_boost2" background-color="FF12083D"/>
+                    caption-size="" tab-caption="2" caption="" caption-placement=""
+                    tab-color="FF12083D" pos-x="" pos-y="" pos-height="" pos-width=""
+                    flex-direction="column">
+                <View class="nomargin" id="knobs_osc2" background-color="FF12083D">
+                  <Slider caption="Coarse" parameter="coarse2" id="knob_coarse2" background-color="FF12083D"
+                          lookAndFeel="FoleysFinest" tab-color="" background-gradient=""
+                          background-alpha="" slider-textbox="no-textbox"/>
+                  <Slider caption="Fine" parameter="fine2" id="knob_fine2" background-color="FF12083D"
+                          slider-textbox="no-textbox"/>
+                  <Slider caption="Boost" parameter="boost2" id="knob_boost2" background-color="FF12083D"
+                          slider-textbox="no-textbox"/>
+                </View>
+                <Label max-height="40" id="fr2_label" background-color="FF12083D" text="14.0"
+                       font-size="15" justification="centred"/>
               </View>
+
               <View flex-wrap="nowrap" class="nomargin" background-color="FF12083D"
-                    caption="" tab-caption="3" tab-color="FF12083D">
-                <Slider caption="Coarse" parameter="coarse3" id="knob_coarse3" background-color="FF12083D"/>
-                <Slider caption="Fine" parameter="fine3" id="knob_fine3" background-color="FF12083D"/>
-                <Slider caption="Boost" parameter="boost3" id="knob_boost3" background-color="FF12083D"/>
+                    caption-size="" tab-caption="3" caption="" caption-placement=""
+                    tab-color="FF12083D" pos-x="" pos-y="" pos-height="" pos-width=""
+                    flex-direction="column">
+                <View class="nomargin" id="knobs_osc3" background-color="FF12083D">
+                  <Slider caption="Coarse" parameter="coarse3" id="knob_coarse3" background-color="FF12083D"
+                          lookAndFeel="FoleysFinest" tab-color="" background-gradient=""
+                          background-alpha="" slider-textbox="no-textbox"/>
+                  <Slider caption="Fine" parameter="fine3" id="knob_fine3" background-color="FF12083D"
+                          slider-textbox="no-textbox"/>
+                  <Slider caption="Boost" parameter="boost3" id="knob_boost3" background-color="FF12083D"
+                          slider-textbox="no-textbox"/>
+                </View>
+                <Label max-height="40" id="fr3_label" background-color="FF12083D" text="14.0"
+                       font-size="15" justification="centred"/>
               </View>
+
               <View flex-wrap="nowrap" class="nomargin" background-color="FF12083D"
-                    caption="" tab-caption="4" tab-color="FF12083D">
-                <Slider caption="Coarse" parameter="coarse4" id="knob_coarse4" background-color="FF12083D"/>
-                <Slider caption="Fine" parameter="fine4" id="knob_fine4" background-color="FF12083D"/>
-                <Slider caption="Boost" parameter="boost4" id="knob_boost4" background-color="FF12083D"/>
+                    caption-size="" tab-caption="4" caption="" caption-placement=""
+                    tab-color="FF12083D" pos-x="" pos-y="" pos-height="" pos-width=""
+                    flex-direction="column">
+                <View class="nomargin" id="knobs_osc4" background-color="FF12083D">
+                  <Slider caption="Coarse" parameter="coarse4" id="knob_coarse4" background-color="FF12083D"
+                          lookAndFeel="FoleysFinest" tab-color="" background-gradient=""
+                          background-alpha="" slider-textbox="no-textbox"/>
+                  <Slider caption="Fine" parameter="fine4" id="knob_fine4" background-color="FF12083D"
+                          slider-textbox="no-textbox"/>
+                  <Slider caption="Boost" parameter="boost4" id="knob_boost4" background-color="FF12083D"
+                          slider-textbox="no-textbox"/>
+                </View>
+                <Label max-height="40" id="fr4_label" background-color="FF12083D" text="14.0"
+                       font-size="15" justification="centred"/>
               </View>
+
               <View flex-wrap="nowrap" class="nomargin" background-color="FF12083D"
-                    caption="" tab-caption="5" tab-color="FF12083D">
-                <Slider caption="Coarse" parameter="coarse5" id="knob_coarse5" background-color="FF12083D"/>
-                <Slider caption="Fine" parameter="fine5" id="knob_fine5" background-color="FF12083D"/>
-                <Slider caption="Boost" parameter="boost5" id="knob_boost5" background-color="FF12083D"/>
+                    caption-size="" tab-caption="5" caption="" caption-placement=""
+                    tab-color="FF12083D" pos-x="" pos-y="" pos-height="" pos-width=""
+                    flex-direction="column">
+                <View class="nomargin" id="knobs_osc5" background-color="FF12083D">
+                  <Slider caption="Coarse" parameter="coarse5" id="knob_coarse5" background-color="FF12083D"
+                          lookAndFeel="FoleysFinest" tab-color="" background-gradient=""
+                          background-alpha="" slider-textbox="no-textbox"/>
+                  <Slider caption="Fine" parameter="fine5" id="knob_fine5" background-color="FF12083D"
+                          slider-textbox="no-textbox"/>
+                  <Slider caption="Boost" parameter="boost5" id="knob_boost5" background-color="FF12083D"
+                          slider-textbox="no-textbox"/>
+                </View>
+                <Label max-height="40" id="fr5_label" background-color="FF12083D" text="14.0"
+                       font-size="15" justification="centred"/>
               </View>
+
               <View flex-wrap="nowrap" class="nomargin" background-color="FF12083D"
-                    caption="" tab-caption="6" tab-color="FF12083D">
-                <Slider caption="Coarse" parameter="coarse6" id="knob_coarse6" background-color="FF12083D"/>
-                <Slider caption="Fine" parameter="fine6" id="knob_fine6" background-color="FF12083D"/>
-                <Slider caption="Boost" parameter="boost6" id="knob_boost6" background-color="FF12083D"/>
+                    caption-size="" tab-caption="6" caption="" caption-placement=""
+                    tab-color="FF12083D" pos-x="" pos-y="" pos-height="" pos-width=""
+                    flex-direction="column">
+                <View class="nomargin" id="knobs_osc6" background-color="FF12083D">
+                  <Slider caption="Coarse" parameter="coarse6" id="knob_coarse6" background-color="FF12083D"
+                          lookAndFeel="FoleysFinest" tab-color="" background-gradient=""
+                          background-alpha="" slider-textbox="no-textbox"/>
+                  <Slider caption="Fine" parameter="fine6" id="knob_fine6" background-color="FF12083D"
+                          slider-textbox="no-textbox"/>
+                  <Slider caption="Boost" parameter="boost6" id="knob_boost6" background-color="FF12083D"
+                          slider-textbox="no-textbox"/>
+                </View>
+                <Label max-height="40" id="fr6_label" background-color="FF12083D" text="14.0"
+                       font-size="15" justification="centred"/>
               </View>
+
             </View>
           </View>
         </View>
@@ -136,7 +199,7 @@
             class="" caption-size="25" margin="10" padding="0" border=""
             background-color="FF12083D">
         <StatusBar id="lbl_status" class="nomargin" caption-placement="centred-left"
-            lookAndFeel="FoleysFinest" background-color="FF12083D"/>
+                   lookAndFeel="FoleysFinest" background-color="FF12083D"/>
       </View>
     </View>
     <View caption="Debug" class="group" width="0" flex-align-self="auto"

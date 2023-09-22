@@ -11,7 +11,7 @@ struct PluginGUIConfig
     std::vector<int> nstates;                   //Valid model statewidth list
     std::string modeldir = "~/";                //Directory listed for models
     std::string status = "";                    //Message from Status Label
-    int selectedid;                             //Selected id 
+    int selectedid;                             //Selected entry in combobox
 };
 
 struct PluginConfig
@@ -28,7 +28,9 @@ struct PluginConfig
     bool enableOSCOutput;
     
     // FM Synth config
-    std::array<float, 6> fm_ratios = {0};       //FM Ratios
+    std::array<float, 6> fm_ratios = {0}; //FM Ratios
+    std::array<float, 6> fm_boost = 
+        {1.0f,1.0f,1.0f,1.0f,1.0f,1.0f}; //Osc Amplitude Boost
     unsigned int fm_config = 0;
 
     //Function switches

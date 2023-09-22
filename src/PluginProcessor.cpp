@@ -132,6 +132,10 @@ void FMTTProcessor::processBlock(juce::AudioBuffer<float>& buffer,
   } else
     fm_ol = fm_ol_placeholder;
 
+  // FM Boost
+  for (int i = 0; i < 6; i++)
+    fm_ol[i] = fm_ol[i] * _config.fm_boost[i];
+  
   // OP ENABLE
   //for (int i = 0; i < _config.op_enable.size(); i++)
   //  if (_config.op_enable[i] == false) fm_ol[i] = 0.0f;
