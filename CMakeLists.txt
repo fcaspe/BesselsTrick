@@ -122,7 +122,7 @@ target_sources(BesselsTrick PRIVATE
     src/PluginProcessorGUI.cpp
     src/PluginProcessorModelRoutines.cpp
     src/TorchInference.cpp
-    src/DynamicModels.cpp
+    src/EnvModels.cpp
     src/FMSynth.cpp
     src/RMSProcessor.cpp
     src/Yin.cpp

@@ -5,7 +5,7 @@
 #include <juce_osc/juce_osc.h>
 
 #include "BinaryData.h"
-#include "DynamicModels.hpp"
+#include "EnvModels.hpp"
 #include "FMSynth.hpp"
 #include "FeatureRegister.hpp"
 #include "RMSProcessor.hpp"
@@ -72,7 +72,7 @@ class FMTTProcessor : public foleys::MagicProcessor,
   //std::vector<float> _feedbackBuffer;
   juce::AudioProcessLoadMeasurer _load_measurer;  // Load measurer
   std::unique_ptr<FMSynth> _fmsynth;              // Synth.
-  std::unique_ptr<DDSPModel> _model;  // Resynthesis Model wrapper pointer.
+  std::unique_ptr<EnvModel> _model;  // Resynthesis Model wrapper pointer.
   //std::unique_ptr<Yin> _pitch_tracker;
   PitchTrackManager<4> _tracker_manager;
   std::unique_ptr<RMS_Processor> _rms_processor;

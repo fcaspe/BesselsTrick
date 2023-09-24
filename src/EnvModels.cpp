@@ -1,5 +1,5 @@
 
-#include "DynamicModels.hpp"
+#include "EnvModels.hpp"
 
 #include <cmath>
 
@@ -56,11 +56,11 @@ void GRUModel::init(const std::string &filename,
   _statebuffer.resize(n_state);
 }
 
-DDSPModel::DDSPModel() { _torchmodel.reset(new TorchModel()); }
+EnvModel::EnvModel() { _torchmodel.reset(new TorchModel()); }
 
-DDSPModel::~DDSPModel() {}
+EnvModel::~EnvModel() {}
 
-inline float DDSPModel::normalize_pitch(float pitch) {
+inline float EnvModel::normalize_pitch(float pitch) {
   if (pitch < 20.0f) return 0.0f;
   constexpr float midi_highest_note = 127.0f;
   constexpr float log_two = 0.69314718056f;
@@ -68,7 +68,7 @@ inline float DDSPModel::normalize_pitch(float pitch) {
   return midi_val / midi_highest_note;
 }
 
-inline float DDSPModel::normalize_loudness(float loudness) {
+inline float EnvModel::normalize_loudness(float loudness) {
   constexpr float _REF_DB = 20.7f;
   constexpr float _DB_RANGE = 80.0f;
   if (loudness < 1e-20f) loudness = 1e-20f;  // Avoid log instabilities
