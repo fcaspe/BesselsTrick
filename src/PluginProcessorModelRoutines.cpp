@@ -2,7 +2,7 @@
 
 void FMTTProcessor::apply_config() {
   _fmsynth->set_config(_config.fm_config);
-  _fmsynth->set_ratios(_config.fm_ratios);
+  _fmsynth->set_ratios(_config.fm_coarse,_config.fm_fine);
   //_pitch_tracker->setThreshold(_config.yin_threshold);
   _tracker_manager.setThreshold(_config.yin_threshold);
 }
@@ -23,7 +23,8 @@ void FMTTProcessor::reload_model(const unsigned int entry) {
   if (_model->contains_patch()) {
     _fmsynth->load_dx7_config(_model->get_patch());
     _config.fm_config = _fmsynth->get_config();
-    _config.fm_ratios = _fmsynth->get_ratios();
+    _config.fm_coarse = _fmsynth->get_fr_coarse();
+    _config.fm_fine = _fmsynth->get_fr_fine();
   }
 }
 

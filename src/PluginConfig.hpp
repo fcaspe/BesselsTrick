@@ -28,7 +28,8 @@ struct PluginConfig
     bool enableOSCOutput;
     
     // FM Synth config
-    std::array<float, 6> fm_ratios = {0}; //FM Ratios
+    std::array<uint8_t, 6> fm_coarse = {1,1,1,1,1,1}; //FM Ratios Coarse
+    std::array<uint8_t, 6> fm_fine = {0}; //FM Ratios Fine
     std::array<float, 6> fm_boost = 
         {1.0f,1.0f,1.0f,1.0f,1.0f,1.0f}; //Osc Amplitude Boost
     unsigned int fm_config = 0;

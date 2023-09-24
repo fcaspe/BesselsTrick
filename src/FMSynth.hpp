@@ -16,10 +16,11 @@ class FMSynth {
   ~FMSynth();
 
   void init(float sampleRate, int blockSize);
-  void set_ratios(std::array<float, 6> fr);
+  void set_ratios(std::array<uint8_t, 6> fr_coarse, std::array<uint8_t, 6> fr_fine);
   void set_config(unsigned int config);
   unsigned int get_config();
-  std::array<float, 6> get_ratios();
+  std::array<uint8_t, 6> get_fr_fine();
+  std::array<uint8_t, 6> get_fr_coarse();
   float* render(float pitch_hz, std::vector<float> ol);
   void load_dx7_config(const std::array<uint8_t, 156> patch);
 
@@ -33,6 +34,8 @@ class FMSynth {
   std::array<float, 6> _phase;
   std::array<float, 6> _prev_ol;
   std::array<float, 6> _fr;
+  std::array<uint8_t, 6> _fr_fine;
+  std::array<uint8_t, 6> _fr_coarse;
   float _previous_pitch_hz;
   unsigned int _config;
   int _block_size;

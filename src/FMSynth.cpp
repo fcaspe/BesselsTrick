@@ -34,7 +34,9 @@ void FMSynth::load_dx7_config(const std::array<uint8_t, 156> patch) {
     uint8_t f_coarse = patch[offset + 18];
     uint8_t f_fine = patch[offset + 19];
     uint8_t f_detune = patch[offset + 20];
-
+    _fr_coarse[5-op] = f_coarse;
+    _fr_fine[5-op] = f_fine;
+    
     //  TODO: Add detune parameter +- 7 cents.
     float f = (f_coarse == 0) ? 0.5f : (float)f_coarse;
     _fr[5 - op] = f + (f / 100) * ((float)f_fine);
@@ -51,9 +53,18 @@ void FMSynth::load_dx7_config(const std::array<uint8_t, 156> patch) {
   return;
 }
 
-void FMSynth::set_ratios(std::array<float, 6> fr) {
+void FMSynth::set_ratios(std::array<uint8_t, 6> fr_coarse, 
+    std::array<uint8_t, 6> fr_fine) 
+{
   /* Load frequency rations */
-  _fr = fr;
+  for (int op = 0; op < 6; op++) {
+    _fr_coarse[op] = fr_coarse[op];
+    _fr_fine[op] = fr_fine[op];
+    
+    //  TODO: Add detune parameter +- 7 cents.
+    float f = (fr_coarse[op] == 0) ? 0.5f : (float)fr_coarse[op];
+    _fr[op] = f + (f / 100) * ((float)fr_fine[op]);
+  }
 }
 
 void FMSynth::set_config(unsigned int config) {
@@ -75,7 +86,8 @@ void FMSynth::set_config(unsigned int config) {
 
 unsigned int FMSynth::get_config() { return _config; }
 
-std::array<float, 6> FMSynth::get_ratios() { return _fr; }
+std::array<uint8_t, 6> FMSynth::get_fr_coarse() { return _fr_coarse; }
+std::array<uint8_t, 6> FMSynth::get_fr_fine() { return _fr_fine; }
 
 void FMSynth::init(float sampleRate, int blockSize) {
   /*Clear memory if resetting.*/

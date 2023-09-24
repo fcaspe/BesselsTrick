@@ -11,18 +11,29 @@ static juce::String algorithm{"knob_algo"};
 static juce::String algoplot{"label_algo"};
 static juce::String inGain{"knob_input_gain"};
 static juce::String outGain{"knob_output_gain"};
-static juce::String fmRatios1{"knob_fr1"};
-static juce::String fmRatios2{"knob_fr2"};
-static juce::String fmRatios3{"knob_fr3"};
-static juce::String fmRatios4{"knob_fr4"};
-static juce::String fmRatios5{"knob_fr5"};
-static juce::String fmRatios6{"knob_fr6"};
+
 static juce::String fmBoost1{"knob_boost1"};
 static juce::String fmBoost2{"knob_boost2"};
 static juce::String fmBoost3{"knob_boost3"};
 static juce::String fmBoost4{"knob_boost4"};
 static juce::String fmBoost5{"knob_boost5"};
 static juce::String fmBoost6{"knob_boost6"};
+
+static juce::String fmFine1{"knob_fine1"};
+static juce::String fmFine2{"knob_fine2"};
+static juce::String fmFine3{"knob_fine3"};
+static juce::String fmFine4{"knob_fine4"};
+static juce::String fmFine5{"knob_fine5"};
+static juce::String fmFine6{"knob_fine6"};
+
+static juce::String fmCoarse1{"knob_coarse1"};
+static juce::String fmCoarse2{"knob_coarse2"};
+static juce::String fmCoarse3{"knob_coarse3"};
+static juce::String fmCoarse4{"knob_coarse4"};
+static juce::String fmCoarse5{"knob_coarse5"};
+static juce::String fmCoarse6{"knob_coarse6"};
+
+
 }  // namespace GUI_IDs
 
 // IDs for properties in ValueTree
@@ -31,18 +42,28 @@ static juce::String cboxselectedid{"cboxselectedid"};
 static juce::String inGain{"in_gain"};
 static juce::String outGain{"out_gain"};
 static juce::String algorithm{"algorithm"};
-static juce::String fmRatios1{"fmratios1"};
-static juce::String fmRatios2{"fmratios2"};
-static juce::String fmRatios3{"fmratios3"};
-static juce::String fmRatios4{"fmratios4"};
-static juce::String fmRatios5{"fmratios5"};
-static juce::String fmRatios6{"fmratios6"};
+
 static juce::String fmBoost1{"boost1"};
 static juce::String fmBoost2{"boost2"};
 static juce::String fmBoost3{"boost3"};
 static juce::String fmBoost4{"boost4"};
 static juce::String fmBoost5{"boost5"};
 static juce::String fmBoost6{"boost6"};
+
+static juce::String fmFine1{"fine1"};
+static juce::String fmFine2{"fine2"};
+static juce::String fmFine3{"fine3"};
+static juce::String fmFine4{"fine4"};
+static juce::String fmFine5{"fine5"};
+static juce::String fmFine6{"fine6"};
+
+static juce::String fmCoarse1{"coarse1"};
+static juce::String fmCoarse2{"coarse2"};
+static juce::String fmCoarse3{"coarse3"};
+static juce::String fmCoarse4{"coarse4"};
+static juce::String fmCoarse5{"coarse5"};
+static juce::String fmCoarse6{"coarse6"};
+
 static juce::String debug1{"debug1"};
 static juce::String debug2{"debug2"};
 static juce::String debug3{"debug3"};
@@ -106,12 +127,20 @@ void FMTTProcessor::updateKnobs() {
   // Each knob update will trigger a notification which in turn,
   // Will update the internal plugin state
   updateKnob(GUI_IDs::algorithm, _config.fm_config + 1);
-  updateKnob(GUI_IDs::fmRatios1, _config.fm_ratios[0]);
-  updateKnob(GUI_IDs::fmRatios2, _config.fm_ratios[1]);
-  updateKnob(GUI_IDs::fmRatios3, _config.fm_ratios[2]);
-  updateKnob(GUI_IDs::fmRatios4, _config.fm_ratios[3]);
-  updateKnob(GUI_IDs::fmRatios5, _config.fm_ratios[4]);
-  updateKnob(GUI_IDs::fmRatios6, _config.fm_ratios[5]);
+  
+  updateKnob(GUI_IDs::fmCoarse1, _config.fm_coarse[0]);
+  updateKnob(GUI_IDs::fmCoarse2, _config.fm_coarse[1]);
+  updateKnob(GUI_IDs::fmCoarse3, _config.fm_coarse[2]);
+  updateKnob(GUI_IDs::fmCoarse4, _config.fm_coarse[3]);
+  updateKnob(GUI_IDs::fmCoarse5, _config.fm_coarse[4]);
+  updateKnob(GUI_IDs::fmCoarse6, _config.fm_coarse[5]);
+
+  updateKnob(GUI_IDs::fmFine1, _config.fm_fine[0]);
+  updateKnob(GUI_IDs::fmFine2, _config.fm_fine[1]);
+  updateKnob(GUI_IDs::fmFine3, _config.fm_fine[2]);
+  updateKnob(GUI_IDs::fmFine4, _config.fm_fine[3]);
+  updateKnob(GUI_IDs::fmFine5, _config.fm_fine[4]);
+  updateKnob(GUI_IDs::fmFine6, _config.fm_fine[5]);
 }
 
 /**
@@ -219,27 +248,34 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
   algorithm->addChild(std::make_unique<juce::AudioParameterInt>(
       juce::ParameterID(IDs::algorithm, 1), "Algorithm", 1, 32, 1));
 
-  auto ratios = std::make_unique<juce::AudioProcessorParameterGroup>(
-      "Frequency Ratios", TRANS("Frequency Ratios"), "|");
-  ratios->addChild(
-      std::make_unique<juce::AudioParameterFloat>(
-          juce::ParameterID(IDs::fmRatios1, 1), "OP1",
-          juce::NormalisableRange<float>(0.5f, 20.0f, 0.01f), 1.0f),
-      std::make_unique<juce::AudioParameterFloat>(
-          juce::ParameterID(IDs::fmRatios2, 1), "OP2",
-          juce::NormalisableRange<float>(0.5f, 20.0f, 0.01f), 1.0f),
-      std::make_unique<juce::AudioParameterFloat>(
-          juce::ParameterID(IDs::fmRatios3, 1), "OP3",
-          juce::NormalisableRange<float>(0.5f, 20.0f, 0.01f), 1.0f),
-      std::make_unique<juce::AudioParameterFloat>(
-          juce::ParameterID(IDs::fmRatios4, 1), "OP4",
-          juce::NormalisableRange<float>(0.5f, 20.0f, 0.01f), 1.0f),
-      std::make_unique<juce::AudioParameterFloat>(
-          juce::ParameterID(IDs::fmRatios5, 1), "OP5",
-          juce::NormalisableRange<float>(0.5f, 20.0f, 0.01f), 1.0f),
-      std::make_unique<juce::AudioParameterFloat>(
-          juce::ParameterID(IDs::fmRatios6, 1), "OP6",
-          juce::NormalisableRange<float>(0.5f, 20.0f, 0.01f), 1.0f));
+  // Frequency ratios in DX7 Format
+  auto ratios_dx = std::make_unique<juce::AudioProcessorParameterGroup>(
+      "FM Frequency Ratios", TRANS("Ratio between fundamental and oscillator frequencies"), "|");
+  ratios_dx->addChild(
+      std::make_unique<juce::AudioParameterInt>(
+          juce::ParameterID(IDs::fmFine1, 1), "OSC1 FR Fine", 0, 31, 0),
+      std::make_unique<juce::AudioParameterInt>(
+          juce::ParameterID(IDs::fmCoarse1, 1), "OSC1 FR Coarse", 0, 99, 1),
+      std::make_unique<juce::AudioParameterInt>(
+          juce::ParameterID(IDs::fmFine2, 1), "OSC2 FR Fine", 0, 31, 0),
+      std::make_unique<juce::AudioParameterInt>(
+          juce::ParameterID(IDs::fmCoarse2, 1), "OSC2 FR Coarse", 0, 99, 1),
+      std::make_unique<juce::AudioParameterInt>(
+          juce::ParameterID(IDs::fmFine3, 1), "OSC3 FR Fine", 0, 31, 0),
+      std::make_unique<juce::AudioParameterInt>(
+          juce::ParameterID(IDs::fmCoarse3, 1), "OSC3 FR Coarse", 0, 99, 1),
+      std::make_unique<juce::AudioParameterInt>(
+          juce::ParameterID(IDs::fmFine4, 1), "OSC4 FR Fine", 0, 31, 0),
+      std::make_unique<juce::AudioParameterInt>(
+          juce::ParameterID(IDs::fmCoarse4, 1), "OSC4 FR Coarse", 0, 99, 1),
+      std::make_unique<juce::AudioParameterInt>(
+          juce::ParameterID(IDs::fmFine5, 1), "OSC5 FR Fine", 0, 31, 0),
+      std::make_unique<juce::AudioParameterInt>(
+          juce::ParameterID(IDs::fmCoarse5, 1), "OSC5 FR Coarse", 0, 99, 1),
+      std::make_unique<juce::AudioParameterInt>(
+          juce::ParameterID(IDs::fmFine6, 1), "OSC6 FR Fine", 0, 31, 0),
+      std::make_unique<juce::AudioParameterInt>(
+          juce::ParameterID(IDs::fmCoarse6, 1), "OSC6 FR Coarse", 0, 99, 1));
 
   auto boost = std::make_unique<juce::AudioProcessorParameterGroup>(
       "FM Oscillator Boost", TRANS("Oscillator Level Boost"), "|");
@@ -285,7 +321,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
       std::make_unique<juce::AudioParameterInt>(
           juce::ParameterID(IDs::debug9, 1), "FeatReg Mode", 0, 1, 0));
   
-  layout.add(std::move(algorithm), std::move(ratios),
+  layout.add(std::move(algorithm), std::move(ratios_dx),
             std::move(boost), std::move(gain), std::move(debug));
 
   return layout;
@@ -294,19 +330,26 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
 void FMTTProcessor::configure_gui_listeners() {
   treeState.addParameterListener(IDs::algorithm, this);
 
-  treeState.addParameterListener(IDs::fmRatios1, this);
-  treeState.addParameterListener(IDs::fmRatios2, this);
-  treeState.addParameterListener(IDs::fmRatios3, this);
-  treeState.addParameterListener(IDs::fmRatios4, this);
-  treeState.addParameterListener(IDs::fmRatios5, this);
-  treeState.addParameterListener(IDs::fmRatios6, this);
-
   treeState.addParameterListener(IDs::fmBoost1, this);
   treeState.addParameterListener(IDs::fmBoost2, this);
   treeState.addParameterListener(IDs::fmBoost3, this);
   treeState.addParameterListener(IDs::fmBoost4, this);
   treeState.addParameterListener(IDs::fmBoost5, this);
   treeState.addParameterListener(IDs::fmBoost6, this);
+
+  treeState.addParameterListener(IDs::fmCoarse1, this);
+  treeState.addParameterListener(IDs::fmCoarse2, this);
+  treeState.addParameterListener(IDs::fmCoarse3, this);
+  treeState.addParameterListener(IDs::fmCoarse4, this);
+  treeState.addParameterListener(IDs::fmCoarse5, this);
+  treeState.addParameterListener(IDs::fmCoarse6, this);
+
+  treeState.addParameterListener(IDs::fmFine1, this);
+  treeState.addParameterListener(IDs::fmFine2, this);
+  treeState.addParameterListener(IDs::fmFine3, this);
+  treeState.addParameterListener(IDs::fmFine4, this);
+  treeState.addParameterListener(IDs::fmFine5, this);
+  treeState.addParameterListener(IDs::fmFine6, this);
 
   treeState.addParameterListener(IDs::inGain, this);
   treeState.addParameterListener(IDs::outGain, this);
@@ -328,13 +371,21 @@ void FMTTProcessor::parameterChanged(const juce::String& param, float value) {
     _config.fm_config = (int)value - 1;
     updateAlgoPlot(int(value));
   } 
-  // FM Ratios
-  else if (param == IDs::fmRatios1) _config.fm_ratios[0] = value;
-  else if (param == IDs::fmRatios2) _config.fm_ratios[1] = value;
-  else if (param == IDs::fmRatios3) _config.fm_ratios[2] = value;
-  else if (param == IDs::fmRatios4) _config.fm_ratios[3] = value;
-  else if (param == IDs::fmRatios5) _config.fm_ratios[4] = value;
-  else if (param == IDs::fmRatios6) _config.fm_ratios[5] = value;
+  // FM Coarse
+  else if (param == IDs::fmCoarse1) _config.fm_coarse[0] = value;
+  else if (param == IDs::fmCoarse2) _config.fm_coarse[1] = value;
+  else if (param == IDs::fmCoarse3) _config.fm_coarse[2] = value;
+  else if (param == IDs::fmCoarse4) _config.fm_coarse[3] = value;
+  else if (param == IDs::fmCoarse5) _config.fm_coarse[4] = value;
+  else if (param == IDs::fmCoarse6) _config.fm_coarse[5] = value;
+
+  // FM Fine
+  else if (param == IDs::fmFine1) _config.fm_fine[0] = value;
+  else if (param == IDs::fmFine2) _config.fm_fine[1] = value;
+  else if (param == IDs::fmFine3) _config.fm_fine[2] = value;
+  else if (param == IDs::fmFine4) _config.fm_fine[3] = value;
+  else if (param == IDs::fmFine5) _config.fm_fine[4] = value;
+  else if (param == IDs::fmFine6) _config.fm_fine[5] = value;
 
   // FM Oscillator Boost
   else if (param == IDs::fmBoost1) _config.fm_boost[0] = powf(10,value/20.0f);
