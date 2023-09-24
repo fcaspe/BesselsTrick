@@ -7,8 +7,6 @@ DrawableLabel::DrawableLabel()
     setColour (backgroundColourId, juce::Colours::black);
     setColour (drawColourId, juce::Colours::green);
     setColour (fillColourId, juce::Colours::green.withAlpha (0.5f));
-
-    startTimerHz (30);
 }
 
 void DrawableLabel::setAlgorithm(int number)
@@ -27,9 +25,4 @@ void DrawableLabel::paint (juce::Graphics& g)
 
     g.drawImage(myImage,0,0,getWidth(),getHeight(),
                 0,0,myImage.getWidth(),myImage.getHeight());
-}
-
-void DrawableLabel::timerCallback()
-{
-    repaint();
 }

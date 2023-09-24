@@ -4,8 +4,7 @@
 #include <foleys_gui_magic/foleys_gui_magic.h>
 #include "PluginProcessor.h"
 // Some nice example drawing
-class DrawableLabel : public juce::Component,
-                      private juce::Timer
+class DrawableLabel : public juce::Component
 {
 public:
     enum ColourIDs
@@ -23,7 +22,6 @@ public:
     void paint (juce::Graphics& g) override;
 
 private:
-    void timerCallback() override;
     int _algorithm = 1;
     const char *_algoplots[32] = {
         BinaryData::algo_1_png,BinaryData::algo_2_png,BinaryData::algo_3_png,BinaryData::algo_4_png,
@@ -50,7 +48,7 @@ private:
 };
 
 // This class is creating and configuring your custom component
-class DrawableLabelItem : public foleys::GuiItem
+class DrawableLabelItem : public foleys::GuiItem, juce::Timer
 {
 public:
     FOLEYS_DECLARE_GUI_FACTORY (DrawableLabelItem)
@@ -64,19 +62,27 @@ public:
             {"drawablelabel-fill", DrawableLabel::fillColourId} });
 
         addAndMakeVisible (drawablelabel);
+        startTimerHz (30);
     }
 
     // Override update() to set the GUI values to your custom component
     void update() override
     {
         
-        juce::var *alg = magicBuilder.getMagicState().getObjectWithType<juce::var>("algorithm");
-        if(alg != nullptr)
+        auto *guiconfig = magicBuilder.getMagicState().getObjectWithType<PluginGUIConfig>("guiconfig");
+        if(guiconfig)
             {
             //std::cout << "[UPDATE] alg: " << int(*alg)<< std::endl;
-            drawablelabel.setAlgorithm (int(*alg));
+            drawablelabel.setAlgorithm (guiconfig->fm_algo);
             }
+        drawablelabel.repaint();
     }
+
+    void timerCallback() override
+    {
+        update();
+    }
+
 
     juce::Component* getWrappedComponent() override
     {
@@ -222,15 +228,18 @@ public:
     {
         int id = getProperty("osc_id");
         if(id>=1 && id<=6)
-            if (auto* processor = dynamic_cast<FMTTProcessor*>(magicBuilder.getMagicState().getProcessor()))
+        {
+            auto *guiconfig = magicBuilder.getMagicState().getObjectWithType<PluginGUIConfig>("guiconfig");
+            if(guiconfig)
             {
-            auto coarse = processor->_config.fm_coarse[id-1];
-            auto fine = processor->_config.fm_fine[id-1];
+                auto coarse = guiconfig->fm_coarse[id-1];
+                auto fine = guiconfig->fm_fine[id-1];
 
-            float f = (coarse == 0) ? 0.5f : (float)coarse;
-            f = f + (f / 100) * ((float)fine);
-            label.setText(juce::String("f = ") + juce::String(f),juce::dontSendNotification);
+                float f = (coarse == 0) ? 0.5f : (float)coarse;
+                f = f + (f / 100) * ((float)fine);
+                label.setText(juce::String("f = ") + juce::String(f),juce::dontSendNotification);
             }
+        }
     }
 
     std::vector<foleys::SettableProperty> getSettableProperties() const override

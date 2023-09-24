@@ -12,6 +12,12 @@ struct PluginGUIConfig
     std::string modeldir = "~/";                //Directory listed for models
     std::string status = "";                    //Message from Status Label
     int selectedid;                             //Selected entry in combobox
+
+    // FM Synth attributes for GUI display
+    unsigned int fm_algo = 0;
+    std::array<uint8_t, 6> fm_coarse = {1,1,1,1,1,1}; //FM Ratios Coarse
+    std::array<uint8_t, 6> fm_fine = {0}; //FM Ratios Fine
+
 };
 
 struct PluginConfig
@@ -28,11 +34,12 @@ struct PluginConfig
     bool enableOSCOutput;
     
     // FM Synth config
+    unsigned int fm_config = 0;
     std::array<uint8_t, 6> fm_coarse = {1,1,1,1,1,1}; //FM Ratios Coarse
     std::array<uint8_t, 6> fm_fine = {0}; //FM Ratios Fine
     std::array<float, 6> fm_boost = 
         {1.0f,1.0f,1.0f,1.0f,1.0f,1.0f}; //Osc Amplitude Boost
-    unsigned int fm_config = 0;
+
 
     //Function switches
     bool enableConsoleOutput;

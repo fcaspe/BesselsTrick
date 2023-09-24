@@ -147,25 +147,18 @@ void FMTTProcessor::updateKnobs() {
 updateAlgoPlot(): 
     When algorithm changes, update graphic
 */
-void FMTTProcessor::updateAlgoPlot(const int algo_num) {
-  auto *alg = magicState.getObjectWithType<juce::var>("algorithm");
-  if(alg != nullptr) *alg = algo_num;
-  if (builder_ptr != nullptr)
-    if (auto* item = builder_ptr->findGuiItemWithId(GUI_IDs::algoplot)) {
-      if (auto* label =
-              dynamic_cast<DrawableLabel*>(item->getWrappedComponent())) {
-        label->setAlgorithm(algo_num);
-      }
-    }
+void FMTTProcessor::updateGuiConfig() {
+  auto *guiconfig = magicState.getObjectWithType<PluginGUIConfig>("guiconfig");
+  if(guiconfig != nullptr)
+  {
+    guiconfig->fm_algo = _config.fm_config+1;
+    guiconfig->fm_coarse = _config.fm_coarse;
+    guiconfig->fm_fine = _config.fm_fine;
+  }
 }
 
 void FMTTProcessor::setupValueTree()
 {
-  // juce::var is persistent
-  if(auto *alg = magicState.createAndAddObject<juce::var>("algorithm"))
-    *alg = 1;
-  else
-    std::cout << "[SETUP VAL TREE] Error creating Object: algorithm";
 
   if(magicState.createAndAddObject<PluginGUIConfig>("guiconfig"));
   else
@@ -369,7 +362,6 @@ void FMTTProcessor::parameterChanged(const juce::String& param, float value) {
   // FM Configuration
   if (param == IDs::algorithm) {
     _config.fm_config = (int)value - 1;
-    updateAlgoPlot(int(value));
   } 
   // FM Coarse
   else if (param == IDs::fmCoarse1) _config.fm_coarse[0] = value;
@@ -419,5 +411,6 @@ void FMTTProcessor::parameterChanged(const juce::String& param, float value) {
     _feat_register.setMode(mode);
   }
   apply_config();
+  updateGuiConfig();
   return;
 }

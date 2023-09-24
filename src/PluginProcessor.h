@@ -57,7 +57,7 @@ class FMTTProcessor : public foleys::MagicProcessor,
   void setupValueTree();
   void updateKnob(juce::String knob_id, double value);
   void updateKnobs();
-  void updateAlgoPlot(const int algo_num);
+  void updateGuiConfig();
 
   /* Model Routine Functions*/
   void load_gru_model(
