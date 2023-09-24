@@ -33,7 +33,6 @@ static juce::String fmCoarse4{"knob_coarse4"};
 static juce::String fmCoarse5{"knob_coarse5"};
 static juce::String fmCoarse6{"knob_coarse6"};
 
-
 }  // namespace GUI_IDs
 
 // IDs for properties in ValueTree
@@ -87,6 +86,7 @@ void FMTTProcessor::initialiseBuilder(foleys::MagicGUIBuilder& builder) {
   builder.registerFactory("DrawableLabel", &DrawableLabelItem::factory);
   builder.registerFactory("ModelComboBox", &ModelComboBoxItem::factory);
   builder.registerFactory("StatusBar", &StatusBarItem::factory);
+  builder.registerFactory("RatiosBar", &RatiosBarItem::factory);
   
   // Workaround to fetch builder from MagicPlugin without
   // overriding createEditor() (which should not be declared by plugin)
@@ -253,29 +253,29 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
       "FM Frequency Ratios", TRANS("Ratio between fundamental and oscillator frequencies"), "|");
   ratios_dx->addChild(
       std::make_unique<juce::AudioParameterInt>(
-          juce::ParameterID(IDs::fmFine1, 1), "OSC1 FR Fine", 0, 31, 0),
+          juce::ParameterID(IDs::fmFine1, 1), "OSC1 FR Fine", 0, 99, 0),
       std::make_unique<juce::AudioParameterInt>(
-          juce::ParameterID(IDs::fmCoarse1, 1), "OSC1 FR Coarse", 0, 99, 1),
+          juce::ParameterID(IDs::fmCoarse1, 1), "OSC1 FR Coarse", 0, 31, 1),
       std::make_unique<juce::AudioParameterInt>(
-          juce::ParameterID(IDs::fmFine2, 1), "OSC2 FR Fine", 0, 31, 0),
+          juce::ParameterID(IDs::fmFine2, 1), "OSC2 FR Fine", 0, 99, 0),
       std::make_unique<juce::AudioParameterInt>(
-          juce::ParameterID(IDs::fmCoarse2, 1), "OSC2 FR Coarse", 0, 99, 1),
+          juce::ParameterID(IDs::fmCoarse2, 1), "OSC2 FR Coarse", 0, 31, 1),
       std::make_unique<juce::AudioParameterInt>(
-          juce::ParameterID(IDs::fmFine3, 1), "OSC3 FR Fine", 0, 31, 0),
+          juce::ParameterID(IDs::fmFine3, 1), "OSC3 FR Fine", 0, 99, 0),
       std::make_unique<juce::AudioParameterInt>(
-          juce::ParameterID(IDs::fmCoarse3, 1), "OSC3 FR Coarse", 0, 99, 1),
+          juce::ParameterID(IDs::fmCoarse3, 1), "OSC3 FR Coarse", 0, 31, 1),
       std::make_unique<juce::AudioParameterInt>(
-          juce::ParameterID(IDs::fmFine4, 1), "OSC4 FR Fine", 0, 31, 0),
+          juce::ParameterID(IDs::fmFine4, 1), "OSC4 FR Fine", 0, 99, 0),
       std::make_unique<juce::AudioParameterInt>(
-          juce::ParameterID(IDs::fmCoarse4, 1), "OSC4 FR Coarse", 0, 99, 1),
+          juce::ParameterID(IDs::fmCoarse4, 1), "OSC4 FR Coarse", 0, 31, 1),
       std::make_unique<juce::AudioParameterInt>(
-          juce::ParameterID(IDs::fmFine5, 1), "OSC5 FR Fine", 0, 31, 0),
+          juce::ParameterID(IDs::fmFine5, 1), "OSC5 FR Fine", 0, 99, 0),
       std::make_unique<juce::AudioParameterInt>(
-          juce::ParameterID(IDs::fmCoarse5, 1), "OSC5 FR Coarse", 0, 99, 1),
+          juce::ParameterID(IDs::fmCoarse5, 1), "OSC5 FR Coarse", 0, 31, 1),
       std::make_unique<juce::AudioParameterInt>(
-          juce::ParameterID(IDs::fmFine6, 1), "OSC6 FR Fine", 0, 31, 0),
+          juce::ParameterID(IDs::fmFine6, 1), "OSC6 FR Fine", 0, 99, 0),
       std::make_unique<juce::AudioParameterInt>(
-          juce::ParameterID(IDs::fmCoarse6, 1), "OSC6 FR Coarse", 0, 99, 1));
+          juce::ParameterID(IDs::fmCoarse6, 1), "OSC6 FR Coarse", 0, 31, 1));
 
   auto boost = std::make_unique<juce::AudioProcessorParameterGroup>(
       "FM Oscillator Boost", TRANS("Oscillator Level Boost"), "|");

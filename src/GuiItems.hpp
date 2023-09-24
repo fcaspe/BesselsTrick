@@ -203,3 +203,62 @@ private:
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StatusBarItem)
 };
+
+
+// This class is creating and configuring your custom component
+class RatiosBarItem : public foleys::GuiItem,
+                      private juce::Timer
+{
+public:
+    FOLEYS_DECLARE_GUI_FACTORY (RatiosBarItem)
+
+    RatiosBarItem (foleys::MagicGUIBuilder& builder, const juce::ValueTree& node) : foleys::GuiItem (builder, node)
+    {
+        addAndMakeVisible (label);
+        startTimerHz(30);
+    }
+
+    void refresh()
+    {
+        int id = getProperty("osc_id");
+        if(id>=1 && id<=6)
+            if (auto* processor = dynamic_cast<FMTTProcessor*>(magicBuilder.getMagicState().getProcessor()))
+            {
+            auto coarse = processor->_config.fm_coarse[id-1];
+            auto fine = processor->_config.fm_fine[id-1];
+
+            float f = (coarse == 0) ? 0.5f : (float)coarse;
+            f = f + (f / 100) * ((float)fine);
+            label.setText(juce::String("f = ") + juce::String(f),juce::dontSendNotification);
+            }
+    }
+
+    std::vector<foleys::SettableProperty> getSettableProperties() const override
+    {
+        std::vector<foleys::SettableProperty> newProperties;
+
+        newProperties.push_back ({ configNode, "osc_id", foleys::SettableProperty::Number, 1, {} });
+
+        return newProperties;
+    }
+
+    void timerCallback() override
+    {
+        refresh();
+    }
+
+    // Sets label callback and updates model list.
+    void update() override
+    {
+        refresh();
+    }
+    juce::Component* getWrappedComponent() override
+    {
+        return &label;
+    }
+
+private:
+    juce::Label label;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RatiosBarItem)
+};
