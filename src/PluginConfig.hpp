@@ -11,7 +11,6 @@ struct PluginGUIConfig
     std::vector<int> nstates;                   //Valid model statewidth list
     std::string modeldir = "~/";                //Directory listed for models
     std::string status = "";                    //Message from Status Label
-    int selectedid;                             //Selected entry in combobox
 
     // FM Synth attributes for GUI display
     unsigned int fm_algo = 0;
