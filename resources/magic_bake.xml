@@ -91,9 +91,8 @@
                           slider-textbox="no-textbox"/>
                 </View>
                 <RatiosBar max-height="40" id="fr1_label" background-color="FF12083D" text="14.0"
-                       font-size="15" justification="centred" osc_id="1"/>
+                           font-size="15" justification="centred" osc_id="1"/>
               </View>
-              
               <View flex-wrap="nowrap" class="nomargin" background-color="FF12083D"
                     caption-size="" tab-caption="2" caption="" caption-placement=""
                     tab-color="FF12083D" pos-x="" pos-y="" pos-height="" pos-width=""
@@ -108,9 +107,8 @@
                           slider-textbox="no-textbox"/>
                 </View>
                 <RatiosBar max-height="40" id="fr2_label" background-color="FF12083D" text="14.0"
-                       font-size="15" justification="centred" osc_id="2"/>
+                           font-size="15" justification="centred" osc_id="2"/>
               </View>
-
               <View flex-wrap="nowrap" class="nomargin" background-color="FF12083D"
                     caption-size="" tab-caption="3" caption="" caption-placement=""
                     tab-color="FF12083D" pos-x="" pos-y="" pos-height="" pos-width=""
@@ -125,9 +123,8 @@
                           slider-textbox="no-textbox"/>
                 </View>
                 <RatiosBar max-height="40" id="fr3_label" background-color="FF12083D" text="14.0"
-                       font-size="15" justification="centred" osc_id="3"/>
+                           font-size="15" justification="centred" osc_id="3"/>
               </View>
-
               <View flex-wrap="nowrap" class="nomargin" background-color="FF12083D"
                     caption-size="" tab-caption="4" caption="" caption-placement=""
                     tab-color="FF12083D" pos-x="" pos-y="" pos-height="" pos-width=""
@@ -142,9 +139,8 @@
                           slider-textbox="no-textbox"/>
                 </View>
                 <RatiosBar max-height="40" id="fr4_label" background-color="FF12083D" text="14.0"
-                       font-size="15" justification="centred" osc_id="4"/>
+                           font-size="15" justification="centred" osc_id="4"/>
               </View>
-
               <View flex-wrap="nowrap" class="nomargin" background-color="FF12083D"
                     caption-size="" tab-caption="5" caption="" caption-placement=""
                     tab-color="FF12083D" pos-x="" pos-y="" pos-height="" pos-width=""
@@ -159,9 +155,8 @@
                           slider-textbox="no-textbox"/>
                 </View>
                 <RatiosBar max-height="40" id="fr5_label" background-color="FF12083D" text="14.0"
-                       font-size="15" justification="centred" osc_id="5"/>
+                           font-size="15" justification="centred" osc_id="5"/>
               </View>
-
               <View flex-wrap="nowrap" class="nomargin" background-color="FF12083D"
                     caption-size="" tab-caption="6" caption="" caption-placement=""
                     tab-color="FF12083D" pos-x="" pos-y="" pos-height="" pos-width=""
@@ -176,9 +171,8 @@
                           slider-textbox="no-textbox"/>
                 </View>
                 <RatiosBar max-height="40" id="fr6_label" background-color="FF12083D" text="14.0"
-                       font-size="15" justification="centred" osc_id="6"/>
+                           font-size="15" justification="centred" osc_id="6"/>
               </View>
-
             </View>
           </View>
         </View>
@@ -222,6 +216,7 @@
               slider-type="linear-vertical"/>
       <Slider caption="FeatReg Mode" parameter="debug9" slider-textbox="no-textbox"
               slider-type="linear-vertical"/>
+      <TextButton onClick="print-valtree" text="ValTree"/>
     </View>
   </View>
 </magic>

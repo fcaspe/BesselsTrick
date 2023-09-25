@@ -110,6 +110,7 @@ public:
     // Sets combobox callback and updates model list.
     void update() override
     {
+        //std::cout << "[MODEL CBOX] Update()" << std::endl;
         if (auto* processor = dynamic_cast<FMTTProcessor*>(magicBuilder.getMagicState().getProcessor()))
             {
             combobox.onChange = [&] {
@@ -120,9 +121,8 @@ public:
                     proc->suspendProcessing(true);
                     proc->reload_model(selected_entry);
                     proc->updateKnobs();
+                    proc->storeToValTree(ValTree_IDs::gui_params,"SelectedID",juce::var(combobox.getSelectedId()));
                     proc->suspendProcessing(false);
-                    if(auto *guiconfig = magicBuilder.getMagicState().getObjectWithType<PluginGUIConfig>("guiconfig"))
-                        guiconfig->selectedid = combobox.getSelectedId();
                 
                 auto *status_label = magicBuilder.findGuiItemWithId("lbl_status");
                 if(status_label) status_label->update();
@@ -139,7 +139,14 @@ public:
                 combobox.addItem(menuentry, menu_idx);
                 menu_idx++;
                 }
-            combobox.setSelectedId(guiconfig->selectedid,juce::sendNotificationSync);  // Select first item
+            // Fetch Selected ID from ValTree
+            auto child_tree = magicBuilder.getMagicState().getValueTree().
+                getChildWithName(ValTree_IDs::gui_params);
+            if(child_tree.isValid())
+                {
+                int selected_id = child_tree.getProperty("SelectedID");
+                combobox.setSelectedId(selected_id,juce::dontSendNotification);
+                }
             }
     }
 

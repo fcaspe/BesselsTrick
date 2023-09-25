@@ -3,78 +3,6 @@
 #include "GuiItems.hpp"
 #include "PluginProcessor.h"
 
-// ID's for objects in GUI
-namespace GUI_IDs {
-static juce::String status{"lbl_status"};
-static juce::String models{"combobox_models"};
-static juce::String algorithm{"knob_algo"};
-static juce::String algoplot{"label_algo"};
-static juce::String inGain{"knob_input_gain"};
-static juce::String outGain{"knob_output_gain"};
-
-static juce::String fmBoost1{"knob_boost1"};
-static juce::String fmBoost2{"knob_boost2"};
-static juce::String fmBoost3{"knob_boost3"};
-static juce::String fmBoost4{"knob_boost4"};
-static juce::String fmBoost5{"knob_boost5"};
-static juce::String fmBoost6{"knob_boost6"};
-
-static juce::String fmFine1{"knob_fine1"};
-static juce::String fmFine2{"knob_fine2"};
-static juce::String fmFine3{"knob_fine3"};
-static juce::String fmFine4{"knob_fine4"};
-static juce::String fmFine5{"knob_fine5"};
-static juce::String fmFine6{"knob_fine6"};
-
-static juce::String fmCoarse1{"knob_coarse1"};
-static juce::String fmCoarse2{"knob_coarse2"};
-static juce::String fmCoarse3{"knob_coarse3"};
-static juce::String fmCoarse4{"knob_coarse4"};
-static juce::String fmCoarse5{"knob_coarse5"};
-static juce::String fmCoarse6{"knob_coarse6"};
-
-}  // namespace GUI_IDs
-
-// IDs for properties in ValueTree
-namespace IDs {
-static juce::String cboxselectedid{"cboxselectedid"};
-static juce::String inGain{"in_gain"};
-static juce::String outGain{"out_gain"};
-static juce::String algorithm{"algorithm"};
-
-static juce::String fmBoost1{"boost1"};
-static juce::String fmBoost2{"boost2"};
-static juce::String fmBoost3{"boost3"};
-static juce::String fmBoost4{"boost4"};
-static juce::String fmBoost5{"boost5"};
-static juce::String fmBoost6{"boost6"};
-
-static juce::String fmFine1{"fine1"};
-static juce::String fmFine2{"fine2"};
-static juce::String fmFine3{"fine3"};
-static juce::String fmFine4{"fine4"};
-static juce::String fmFine5{"fine5"};
-static juce::String fmFine6{"fine6"};
-
-static juce::String fmCoarse1{"coarse1"};
-static juce::String fmCoarse2{"coarse2"};
-static juce::String fmCoarse3{"coarse3"};
-static juce::String fmCoarse4{"coarse4"};
-static juce::String fmCoarse5{"coarse5"};
-static juce::String fmCoarse6{"coarse6"};
-
-static juce::String debug1{"debug1"};
-static juce::String debug2{"debug2"};
-static juce::String debug3{"debug3"};
-static juce::String debug5{"debug5"};
-static juce::String debug6{"debug6"};
-static juce::String debug7{"debug7"};
-static juce::String debug8{"debug8"};
-static juce::String debug9{"debug9"};
-
-static juce::Identifier oscilloscope{"oscilloscope"};
-}  // namespace IDs
-
 /**
 initialiseBuilder(): 
     Here we initialize the GUI Builder
@@ -159,20 +87,53 @@ void FMTTProcessor::updateGuiConfig() {
 
 void FMTTProcessor::setupValueTree()
 {
-
   if(magicState.createAndAddObject<PluginGUIConfig>("guiconfig"));
   else
     std::cout << "[SETUP VAL TREE] Error creating Object: guiconfig";
+
 }
 
+void FMTTProcessor::storeToValTree(juce::Identifier child_id,
+  juce::String property,juce::var value)
+{
+  auto &val_tree = magicState.getValueTree();
+  auto child = val_tree.getChildWithName(child_id);
+  if(child.isValid() == false)
+  {
+    juce::ValueTree newChild (child_id);
+    newChild.setProperty(property,value,nullptr);
+    val_tree.addChild(newChild,-1,nullptr);
+    //if (myNode.hasProperty (nameProperty)) {}
+  }
+  else
+  {
+    child.setProperty(property,value,nullptr);
+  }
+}
 
 void FMTTProcessor::postSetStateInformation()
 {
   std::cout << "[postSetStateInformation] Recalling from treeState" << std::endl;
   auto *guiconfig = magicState.getObjectWithType<PluginGUIConfig>("guiconfig");
-  if(guiconfig) std::cout << "\tModeldir: " << guiconfig->modeldir << std::endl;
-  if(builder_ptr) builder_ptr->findGuiItemWithId(GUI_IDs::models)->update();
-  if(builder_ptr) builder_ptr->findGuiItemWithId(GUI_IDs::status)->update();
+  if(guiconfig)
+  {
+  auto &val_tree = magicState.getValueTree();
+  guiconfig->modeldir = val_tree.getChildWithName(ValTree_IDs::gui_params).
+    getProperty("SaveDir").toString().toStdString();
+  //Fetch last valid directory from valtree
+  std::cout << "\tModeldir: " << guiconfig->modeldir << std::endl;
+  loadModelList();
+
+  // Fetch last loaded model from valtree and load it.
+  // Then the combobox model bar should be able to get the 
+  // last selected entry from the valtree at update().
+  auto child_node = val_tree.getChildWithName(ValTree_IDs::gui_params);
+  if (child_node.hasProperty ("SelectedID")){
+    std::cout << "\tSelectedID: " << (int)child_node.getProperty("SelectedID") << std::endl;
+    int last_model_to_load = ((int)child_node.getProperty("SelectedID")) - 1;
+    reload_model(last_model_to_load);
+    }
+  }
 
 }
 
@@ -196,7 +157,8 @@ void FMTTProcessor::showLoadDialog() {
           file.getParentDirectory().getFullPathName().toStdString();
     else
       guiconfig->modeldir = file.getFullPathName().toStdString();
-
+    // Store dir at val tree
+    storeToValTree(ValTree_IDs::gui_params,"SaveDir",juce::var(guiconfig->modeldir));
     loadModelList();
     builder_ptr->findGuiItemWithId(GUI_IDs::status)->update();
     builder_ptr->findGuiItemWithId(GUI_IDs::models)->update();
@@ -230,8 +192,16 @@ void FMTTProcessor::loadModelList() {
 
 void FMTTProcessor::add_triggers() {
   magicState.addTrigger("load-model", [&] { showLoadDialog(); });
+  magicState.addTrigger("print-valtree", [&] { printValueTree(); });
   return;
 }
+
+void FMTTProcessor::printValueTree() {
+
+  auto &valueTree = magicState.getValueTree();
+  std::cout << valueTree.toXmlString() << std::endl;
+}
+
 
 juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
   juce::AudioProcessorValueTreeState::ParameterLayout layout;
