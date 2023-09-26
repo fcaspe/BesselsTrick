@@ -156,7 +156,7 @@ target_compile_definitions(BesselsTrick
 
 juce_add_binary_data(${PROJECT_NAME}_data
                     SOURCES
-                    resources/magic_bake.xml
+                    resources/magic_bake.xml  resources/img/logo.png
                     resources/img/algo_1.png  resources/img/algo_2.png  resources/img/algo_3.png  resources/img/algo_4.png
                     resources/img/algo_5.png  resources/img/algo_6.png  resources/img/algo_7.png  resources/img/algo_8.png
                     resources/img/algo_9.png  resources/img/algo_10.png resources/img/algo_11.png resources/img/algo_12.png

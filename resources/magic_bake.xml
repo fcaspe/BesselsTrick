@@ -21,15 +21,23 @@
     </Style>
   </Styles>
   <View id="root" flex-align-items="stretch" flex-wrap="nowrap" flex-align-self="stretch"
-        caption="Bessel's Trick" caption-size="25" image-placement="stretch"
-        resizable="1" resize-corner="1" min-width="900" min-height="400"
-        flex-direction="column" background-image="algo_23_png" max-height="400"
-        max-width="900">
-    <View flex-direction="column" max-height="400" max-width="900" background-color="FF12083D">
+        image-placement="stretch" resizable="1" resize-corner="1" min-width="850"
+        min-height="400" flex-direction="column" background-image="algo_23_png"
+        max-height="400" max-width="850" caption-placement="top-left"
+        caption="" caption-size="">
+    <View flex-direction="column" max-height="400" max-width="850" background-color="FF12083D"
+          class="nomargin">
+      <View class="nomargin" id="logo_view" background-color="FF12083D">
+        <View id="logo_lbl" class="nomargin" background-color="FF12083D" background-image="logo_png"
+              image-placement="centred" pos-x="" pos-y="" min-width="200" max-width="200"/>
+        <View caption="FM Tone Transfer" caption-placement="bottom-left" min-width="200"
+              max-width="200" min-height="50" background-color="FF12083D"/>
+      </View>
       <View flex-direction="row" caption-size="30" flex-justify-content="start"
             flex-align-items="start" flex-align-content="start" flex-wrap="nowrap"
-            min-height="330" display="flexbox" background-color="FF12083D"
-            id="pipeline_view" max-height="330">
+            min-height="300" display="flexbox" background-color="FF12083D"
+            id="pipeline_view" max-height="300" class="nomargin" min-width="850"
+            max-width="850">
         <View class="group" min-height="300" max-height="300" min-width="120"
               max-width="120" pos-x="" pos-y="" pos-width="" pos-height=""
               id="input_view" flex-direction="column" caption="" margin="5"
@@ -190,7 +198,7 @@
       </View>
       <View id="status_view" caption="Status: " caption-placement="centred-left"
             max-height="40" max-width="350" min-height="40" min-width="350"
-            class="" caption-size="25" margin="10" padding="0" border=""
+            class="nomargin" caption-size="25" margin="10" padding="0" border=""
             background-color="FF12083D">
         <StatusBar id="lbl_status" class="nomargin" caption-placement="centred-left"
                    lookAndFeel="FoleysFinest" background-color="FF12083D"/>
@@ -199,7 +207,7 @@
     <View caption="Debug" class="group" width="0" flex-align-self="auto"
           min-width="800" display="flexbox" flex-direction="row" flex-align-content="center"
           flex-align-items="center" flex-justify-content="center" flex-grow="0"
-          flex-shrink="0" max-width="0" min-height="150">
+          flex-shrink="0" max-width="0" min-height="0">
       <Slider caption="Console I/O" parameter="debug1" slider-textbox="no-textbox"
               slider-type="linear-vertical"/>
       <Slider caption="Bypass Inference" parameter="debug2" slider-textbox="no-textbox"
