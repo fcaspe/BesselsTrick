@@ -3,7 +3,8 @@
 #include "JuceHeader.h"
 #include <foleys_gui_magic/foleys_gui_magic.h>
 #include "PluginProcessor.h"
-// Some nice example drawing
+
+// gui component for displaying the FM algorithm
 class DrawableLabel : public juce::Component
 {
 public:
@@ -16,9 +17,7 @@ public:
     };
 
     DrawableLabel();
-
     void setAlgorithm(int number);
-
     void paint (juce::Graphics& g) override;
 
 private:
@@ -47,43 +46,15 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DrawableLabel)
 };
 
-// This class is creating and configuring your custom component
+// DrawableLabel: Shows current FM synth algorithm
 class DrawableLabelItem : public foleys::GuiItem, juce::Timer
 {
 public:
     FOLEYS_DECLARE_GUI_FACTORY (DrawableLabelItem)
 
-    DrawableLabelItem (foleys::MagicGUIBuilder& builder, const juce::ValueTree& node) : foleys::GuiItem (builder, node)
-    {
-        // Create the colour names to have them configurable
-        setColourTranslation ({
-            {"drawablelabel-background", DrawableLabel::backgroundColourId},
-            {"drawablelabel-draw", DrawableLabel::drawColourId},
-            {"drawablelabel-fill", DrawableLabel::fillColourId} });
-
-        addAndMakeVisible (drawablelabel);
-        startTimerHz (30);
-    }
-
-    // Override update() to set the GUI values to your custom component
-    void update() override
-    {
-        
-        auto *guiconfig = magicBuilder.getMagicState().getObjectWithType<PluginGUIConfig>("guiconfig");
-        if(guiconfig)
-            {
-            //std::cout << "[UPDATE] alg: " << int(*alg)<< std::endl;
-            drawablelabel.setAlgorithm (guiconfig->fm_algo);
-            }
-        drawablelabel.repaint();
-    }
-
-    void timerCallback() override
-    {
-        update();
-    }
-
-
+    DrawableLabelItem (foleys::MagicGUIBuilder& builder, const juce::ValueTree& node);
+    void update() override;
+    void timerCallback() override;
     juce::Component* getWrappedComponent() override
     {
         return &drawablelabel;
@@ -91,65 +62,19 @@ public:
 
 private:
     DrawableLabel drawablelabel;
-
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DrawableLabelItem)
 };
 
 
-// This class is creating and configuring your custom component
+// ModelComboBox: Displays a list of models to load.
 class ModelComboBoxItem : public foleys::GuiItem
 {
 public:
     FOLEYS_DECLARE_GUI_FACTORY (ModelComboBoxItem)
 
-    ModelComboBoxItem (foleys::MagicGUIBuilder& builder, const juce::ValueTree& node) : foleys::GuiItem (builder, node)
-    {
-        addAndMakeVisible (combobox);
-    }
-
+    ModelComboBoxItem (foleys::MagicGUIBuilder& builder, const juce::ValueTree& node);
     // Sets combobox callback and updates model list.
-    void update() override
-    {
-        //std::cout << "[MODEL CBOX] Update()" << std::endl;
-        if (auto* processor = dynamic_cast<FMTTProcessor*>(magicBuilder.getMagicState().getProcessor()))
-            {
-            combobox.onChange = [&] {
-                if (auto* proc = dynamic_cast<FMTTProcessor*>(magicBuilder.getMagicState().getProcessor()))
-                {
-                    const auto selected_entry = combobox.getSelectedId() - 1;
-                    // Stop Audio Processing Thread ( It can crash when re-loading model )
-                    proc->suspendProcessing(true);
-                    proc->reload_model(selected_entry);
-                    proc->updateKnobs();
-                    proc->storeToValTree(ValTree_IDs::gui_params,"SelectedID",juce::var(combobox.getSelectedId()));
-                    proc->suspendProcessing(false);
-                
-                auto *status_label = magicBuilder.findGuiItemWithId("lbl_status");
-                if(status_label) status_label->update();
-                }
-
-            };
-            combobox.clear(false);  // Remove all previous items
-            int menu_idx = 1;
-            auto *guiconfig = magicBuilder.getMagicState().getObjectWithType<PluginGUIConfig>("guiconfig");
-            if(!guiconfig) return;
-            // Update ComboBox entries
-            for (std::string menuentry : guiconfig->modelnames) 
-                {
-                combobox.addItem(menuentry, menu_idx);
-                menu_idx++;
-                }
-            // Fetch Selected ID from ValTree
-            auto child_tree = magicBuilder.getMagicState().getValueTree().
-                getChildWithName(ValTree_IDs::gui_params);
-            if(child_tree.isValid())
-                {
-                int selected_id = child_tree.getProperty("SelectedID");
-                combobox.setSelectedId(selected_id,juce::dontSendNotification);
-                }
-            }
-    }
-
+    void update() override;
     juce::Component* getWrappedComponent() override
     {
         return &combobox;
@@ -157,55 +82,20 @@ public:
 
 private:
     juce::ComboBox combobox;
-
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ModelComboBoxItem)
 };
 
 
-// This class is creating and configuring your custom component
+// Status Bar, provides indications to users
 class StatusBarItem : public foleys::GuiItem
 {
 public:
     FOLEYS_DECLARE_GUI_FACTORY (StatusBarItem)
-
-    StatusBarItem (foleys::MagicGUIBuilder& builder, const juce::ValueTree& node) : foleys::GuiItem (builder, node)
-    {
-        addAndMakeVisible (label);
-    }
-
-   void update_status_message()
-    {
-    if (auto* processor = dynamic_cast<FMTTProcessor*>(magicBuilder.getMagicState().getProcessor()))
-    {
-        auto *guiconfig = magicBuilder.getMagicState().getObjectWithType<PluginGUIConfig>("guiconfig");
-        if(guiconfig)
-        {
-            // Update Status message
-            if(guiconfig->modelnames.size()== 0)
-            {
-                guiconfig->status = "Empty model list. Open pretrained directory.";
-            }
-            else
-            {
-                // Check if a model is loaded
-                if(processor->_model.get() == nullptr)
-                    guiconfig->status = "Select a model from list.";
-                else
-                    guiconfig->status = "Ready to play!";       
-            }
-        }
-    }
-    return;
-    }
-
+    
+    StatusBarItem (foleys::MagicGUIBuilder& builder, const juce::ValueTree& node);
+    void update_status_message();
     // Sets label callback and updates model list.
-    void update() override
-    {
-        update_status_message();
-        auto *guiconfig = magicBuilder.getMagicState().getObjectWithType<PluginGUIConfig>("guiconfig");
-        if(!guiconfig) return;
-        label.setText(guiconfig->status,juce::dontSendNotification);
-    }
+    void update() override;
     juce::Component* getWrappedComponent() override
     {
         return &label;
@@ -213,7 +103,6 @@ public:
 
 private:
     juce::Label label;
-
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (StatusBarItem)
 };
 
@@ -225,49 +114,12 @@ class RatiosBarItem : public foleys::GuiItem,
 public:
     FOLEYS_DECLARE_GUI_FACTORY (RatiosBarItem)
 
-    RatiosBarItem (foleys::MagicGUIBuilder& builder, const juce::ValueTree& node) : foleys::GuiItem (builder, node)
-    {
-        addAndMakeVisible (label);
-        startTimerHz(30);
-    }
-
-    void refresh()
-    {
-        int id = getProperty("osc_id");
-        if(id>=1 && id<=6)
-        {
-            auto *guiconfig = magicBuilder.getMagicState().getObjectWithType<PluginGUIConfig>("guiconfig");
-            if(guiconfig)
-            {
-                auto coarse = guiconfig->fm_coarse[id-1];
-                auto fine = guiconfig->fm_fine[id-1];
-
-                float f = (coarse == 0) ? 0.5f : (float)coarse;
-                f = f + (f / 100) * ((float)fine);
-                label.setText(juce::String("f = ") + juce::String(f),juce::dontSendNotification);
-            }
-        }
-    }
-
-    std::vector<foleys::SettableProperty> getSettableProperties() const override
-    {
-        std::vector<foleys::SettableProperty> newProperties;
-
-        newProperties.push_back ({ configNode, "osc_id", foleys::SettableProperty::Number, 1, {} });
-
-        return newProperties;
-    }
-
-    void timerCallback() override
-    {
-        refresh();
-    }
-
+    RatiosBarItem (foleys::MagicGUIBuilder& builder, const juce::ValueTree& node);
+    void refresh();
+    std::vector<foleys::SettableProperty> getSettableProperties() const override;
+    void timerCallback() override;
     // Sets label callback and updates model list.
-    void update() override
-    {
-        refresh();
-    }
+    void update() override;
     juce::Component* getWrappedComponent() override
     {
         return &label;
