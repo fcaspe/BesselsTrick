@@ -29,9 +29,10 @@
           class="nomargin">
       <View class="nomargin" id="logo_view" background-color="FF12083D">
         <View id="logo_lbl" class="nomargin" background-color="FF12083D" background-image="logo_png"
-              image-placement="centred" pos-x="" pos-y="" min-width="200" max-width="200"/>
+              image-placement="centred" pos-x="" pos-y="" min-width="200" max-width="200"
+              margin="5"/>
         <View caption="FM Tone Transfer" caption-placement="bottom-left" min-width="200"
-              max-width="200" min-height="50" background-color="FF12083D"/>
+              max-width="200" min-height="47" background-color="FF12083D"/>
       </View>
       <View flex-direction="row" caption-size="30" flex-justify-content="start"
             flex-align-items="start" flex-align-content="start" flex-wrap="nowrap"
