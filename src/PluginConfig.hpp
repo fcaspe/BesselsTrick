@@ -21,6 +21,7 @@ struct PluginGUIConfig
 
 struct PluginConfig
 {
+    int num_fmblocks;       // How many 64-sample FM blocks we fit in an audio block.
     float pitch_ratio;
     float yin_threshold;
     float rms_clamp_value;
@@ -47,6 +48,7 @@ struct PluginConfig
 
     PluginConfig()
         {
+        num_fmblocks = 0;
         pitch_ratio = 1.0f;
         yin_threshold = 0.15f;
         feedback_level = 0.0f;

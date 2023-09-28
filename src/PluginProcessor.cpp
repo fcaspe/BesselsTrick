@@ -64,6 +64,44 @@ inline float normalize_pitch(float pitch) {
   return midi_val / midi_highest_note;
 }
 
+inline void FMTTProcessor::sendDebugMessages(int fmblock,float pitch,
+  float pitch_norm,float rms_in, std::vector<float> fm_ol)
+{
+  /* DEBUG OVER CONSOLE */
+  if (_config.enableConsoleOutput == true) {
+    std::cout << "[fmblock " << fmblock << "] [f0 " << pitch << "] [ld " << rms_in << "]\n";
+    for (int i = 0; i < 6; i++) std::cout << fm_ol[i] << " ";
+    std::cout << std::endl;
+  }
+
+  /* Step7: Debug*/
+  if (_config.enableOSCOutput == true) {
+    /* DEBUG OVER OSC */
+    juce::OSCMessage msg1("/f0ld");
+    msg1.addFloat32(pitch_norm);
+    msg1.addFloat32(rms_in);
+    msg1.addFloat32(0.0f); //Probability placeholder. Don't send anymore
+    _osc_sender.send(msg1);
+
+    // send envelopes over osc.
+    juce::OSCMessage msg2("/fm_ol");
+    for (float value : fm_ol) msg2.addFloat32(value);
+    _osc_sender.send(msg2);
+
+    //if (_model) {
+    //  if (_model->is_standalone() == false) {
+    //    juce::OSCMessage msg3("/hidden");
+    //    auto hidden_state = _model->get_state();
+    //    for (float value : hidden_state) msg3.addFloat32(value);
+    //    _osc_sender.send(msg3);
+    //  }
+
+    //juce::OSCMessage msg4("/fm_algo");
+    // msg4.addInt32(*_guiconfig.fm_algorithm);
+    //_osc_sender.send(msg4);
+    }
+}
+
 /**
 processBlock(): Rendering function
 
@@ -79,140 +117,87 @@ void FMTTProcessor::processBlock(juce::AudioBuffer<float>& buffer,
   auto totalNumInputChannels = getTotalNumInputChannels();
   auto totalNumOutputChannels = getTotalNumOutputChannels();
 
+
+
   for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
     buffer.clear(i, 0, buffer.getNumSamples());
 
   juce::AudioProcessLoadMeasurer::ScopedTimer s(_load_measurer);
 
-  /* Step2: Gather control inputs */
   juce::ignoreUnused(midiMessages);
-
-  constexpr int input_ch = 0;  // Use Channel 0 as input
-
-  // Feedback
-  // float* raw_input = buffer.getReadPointer(input_ch);
-  //for (auto sample = 0; sample < buffer.getNumSamples(); sample++) {
-  // _feedbackBuffer[sample] =
-  //      raw_input[sample] + _feedbackBuffer[sample] * _config.feedback_level;
-  //}
-  //const float* audio_input = _feedbackBuffer.data();
-
-  // Input Gain
-  float* input_read_ptr = buffer.getWritePointer(input_ch);
-  for (auto sample = 0; sample < buffer.getNumSamples(); sample++) {
-    input_read_ptr[sample] = input_read_ptr[sample] * _config.in_gain;
-  }
-
-  const float* audio_input = buffer.getReadPointer(input_ch);
-
-  // RMS
-  float rms_in = _rms_processor->process(audio_input);
-
-  // PITCH
-  _tracker_manager.updateBuffer(audio_input);
-  float pitch = _tracker_manager.getPitch();
-  //float prob = _pitch_tracker->getProbability();
-  float pitch_norm = normalize_pitch(pitch);
-
-  // Run Feature Register
-  rms_in = _feat_register.run(pitch, rms_in);
-
-  /* Step3: DNN inference */
-
-  /* Reset logic */
-  if (rms_in <= 0.0 && pitch_norm <= 0.0 && _config.allow_model_reset)
-    if (_config.skipInference == false && _model) {
-      _model->reset_state();
-    }
-
-  std::vector<float> fm_ol;
-  std::vector<float> fm_ol_placeholder = {1, 0, 0, 0, 0, 0};
-  if (_config.skipInference == false && _model) {
-    fm_ol = _model->call(pitch_norm, rms_in);
-  } else
-    fm_ol = fm_ol_placeholder;
-
-  // FM Boost
-  for (int i = 0; i < 6; i++)
-    fm_ol[i] = fm_ol[i] * _config.fm_boost[i];
   
-  // OP ENABLE
-  //for (int i = 0; i < _config.op_enable.size(); i++)
-  //  if (_config.op_enable[i] == false) fm_ol[i] = 0.0f;
+  // Each fm block renders 64 samples, adapt to the selected plugin block size.
+  for(int fmblock = 0; fmblock < _config.num_fmblocks ; fmblock++)
+  {
+    const int start_sample = fm_block_size*fmblock;
+    const int input_ch = 0;  // Use Channel 0 as input
 
-  /* DEBUG OVER CONSOLE */
-  if (_config.enableConsoleOutput == true) {
-    std::cout << std::endl << "[f0 " << pitch << "] [ld " << rms_in << "]\n";
-    for (int i = 0; i < 6; i++) std::cout << fm_ol[i] << " ";
-    std::cout << std::endl;
-  }
-
-  if (_config.enableOSCOutput == true) {
-    /* DEBUG OVER OSC */
-    juce::OSCMessage msg1("/f0ld");
-    msg1.addFloat32(pitch_norm);
-    msg1.addFloat32(rms_in);
-    msg1.addFloat32(0.0f); //Probability placeholder
-    _osc_sender.send(msg1);
-
-    // send envelopes over osc.
-    juce::OSCMessage msg2("/fm_ol");
-    for (float value : fm_ol) msg2.addFloat32(value);
-    _osc_sender.send(msg2);
-
-    if (_model) {
-      if (_model->is_standalone() == false) {
-        juce::OSCMessage msg3("/hidden");
-        auto hidden_state = _model->get_state();
-        for (float value : hidden_state) msg3.addFloat32(value);
-        _osc_sender.send(msg3);
-      }
+    auto* input_read_ptr = buffer.getWritePointer(input_ch,start_sample);
+    auto *audio_input = buffer.getReadPointer(input_ch,start_sample);
+    // Input Gain
+    for (auto sample = 0; sample < fm_block_size; sample++) {
+      input_read_ptr[sample] = input_read_ptr[sample] * _config.in_gain;
     }
 
-    juce::OSCMessage msg4("/fm_algo");
-    // msg4.addInt32(*_guiconfig.fm_algorithm);
-    _osc_sender.send(msg4);
-  }
+    /* Step2: Gather control inputs */
+    // RMS
+    float rms_in = _rms_processor->process(audio_input);
 
-  /* Step4: Render audio */
-  float* renderer_buffer = _fmsynth->render(pitch * _config.pitch_ratio, fm_ol);
+    // PITCH
+    _tracker_manager.updateBuffer(audio_input);
+    float pitch = _tracker_manager.getPitch();
+    //float prob = _pitch_tracker->getProbability();
+    float pitch_norm = normalize_pitch(pitch);
 
-  // RMS FEEDBACK
-  // rms_norm_feedback = _rms_processor_feedback->process(renderer_buffer);
+    // Run Feature Register
+    rms_in = _feat_register.run(pitch, rms_in);
+
+    /* Step3: DNN inference */
+
+    /* DNN Reset logic */
+    if(_config.allow_model_reset)
+      if (rms_in <= 0.0 && pitch_norm <= 0.0)
+        if (_config.skipInference == false && _model) {
+          _model->reset_state();
+        }
+
+    std::vector<float> fm_ol;
+    std::vector<float> fm_ol_placeholder = {1, 0, 0, 0, 0, 0};
+    if(_model)
+      if (_config.skipInference == false) {
+        fm_ol = _model->call(pitch_norm, rms_in);
+      } else
+        fm_ol = fm_ol_placeholder;
+      // FM Boost
+      for (int i = 0; i < 6; i++)
+        fm_ol[i] = fm_ol[i] * _config.fm_boost[i];
+
+    /* Step4: Render audio */
+    float* renderer_buffer = _fmsynth->render(pitch * _config.pitch_ratio, fm_ol);
+
+    sendDebugMessages(fmblock,pitch,pitch_norm,rms_in,fm_ol);
+    _fm_render_buffer.copyFrom(0,               //Dest Channel
+                               start_sample,    //Dest Start Sample
+                               renderer_buffer, // Source
+                               fm_block_size);  //N Samples
+    
+    // If this is the last FM block, update GUI meters
+    if(fmblock == _config.num_fmblocks - 1)
+      updateMeters(rms_in,pitch,_fm_render_buffer);
+  } // end for loop fmblock
 
   /* Step5: Store audio in JUCE's output buffers. */
   for (int i = 0; i < totalNumOutputChannels; i++) {
     auto* channelData = buffer.getWritePointer(i);
+    auto *renderData = _fm_render_buffer.getReadPointer(i,0);
     if (_config.enableAudioPassthrough == false) {
       // Clear buffer with input audio.
       buffer.clear(i, 0, buffer.getNumSamples());
       for (auto sample = 0; sample < buffer.getNumSamples(); sample++) {
-        channelData[sample] = renderer_buffer[sample] * _config.out_gain;
-        //_feedbackBuffer[sample] = renderer_buffer[sample];
-      }
-    } else {
-      for (auto sample = 0; sample < buffer.getNumSamples(); sample++) {
-        channelData[sample] = audio_input[sample];  // Passthrough mode
+        channelData[sample] = 0.0f;//renderData[sample] * _config.out_gain;
       }
     }
   }
-
-  /* Step6: Update Meters*/
-  if (_input_rms_meter)
-    {
-      auto input_buffer = juce::AudioBuffer<float>(1,1);
-      //Denormalize rms before feeding into meter
-      input_buffer.getWritePointer(0)[0] = powf(20,((rms_in-1.33f)*60.0f)/20.0f);
-      _input_rms_meter->pushSamples(input_buffer);
-    }
-  if (_input_f0_meter)
-    {
-      auto input_buffer = juce::AudioBuffer<float>(1,1);
-      // Scale pitch for feeding into meter
-      input_buffer.getWritePointer(0)[0] = pitch > 3000? 1.0 : pitch/3000 ;
-      _input_f0_meter->pushSamples(input_buffer);
-    }
-  if (_output_meter) _output_meter->pushSamples(buffer);
 
 }
 
@@ -227,15 +212,17 @@ void FMTTProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
   std::cout << "[DEBUG] prepareToPlay() called!" << std::endl;
   _load_measurer.reset(sampleRate, samplesPerBlock);
 
+  _config.num_fmblocks = samplesPerBlock / fm_block_size;
+  _fm_render_buffer.setSize(1,samplesPerBlock);
   /* Init renderer */
   //_feedbackBuffer.resize(samplesPerBlock);
-  if (_fmsynth) _fmsynth->init(sampleRate, samplesPerBlock);
+  if (_fmsynth) _fmsynth->init(sampleRate, fm_block_size);
 
   /* Init RMS processor */
   const int RMS_WINDOW = 2048;
   if (_rms_processor)
     _rms_processor->init(RMS_WINDOW,        // Window size
-                         samplesPerBlock);  // Block size
+                         fm_block_size);  // Block size
 
   /* Init Pitch Tracker */
   
@@ -244,7 +231,7 @@ void FMTTProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
   const int YIN_WINDOW = 1280; //69Hz @ 44.1kHz
   const std::array<int,4> yin_windows = {256,512,1024,1280};
   const std::array<bool,4> yin_downsample = {false,false,false,false};
-  _tracker_manager.init(sampleRate, yin_windows, samplesPerBlock,
+  _tracker_manager.init(sampleRate, yin_windows, fm_block_size,
                         0.15f, // Threshold
                         yin_downsample); // Downsample x2
 }

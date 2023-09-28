@@ -122,7 +122,7 @@ class FMTTProcessor : public foleys::MagicProcessor,
   void setCurrentProgram(int index) override;
   const juce::String getProgramName(int index) override;
   void changeProgramName(int index, const juce::String& newName) override;
-
+  void sendDebugMessages(int fmblock, float pitch, float pitch_norm, float rms_in, std::vector<float> fm_ol);
   void initialiseBuilder(foleys::MagicGUIBuilder& builder) override;
   void parameterChanged(const juce::String& param, float value) override;
   void postSetStateInformation () override;
@@ -136,6 +136,7 @@ class FMTTProcessor : public foleys::MagicProcessor,
   void setupValueTree();
   void updateKnob(juce::String knob_id, double value);
   void updateKnobs();
+  void updateMeters(float rms_in, float pitch,juce::AudioBuffer<float> &buffer);
   void updateGuiConfig();
 
   /* Model Routine Functions*/
@@ -148,7 +149,7 @@ class FMTTProcessor : public foleys::MagicProcessor,
 
   /* Application Specific attributes. */
   juce::AudioProcessorValueTreeState treeState;
-  //std::vector<float> _feedbackBuffer;
+  juce::AudioBuffer<float> _fm_render_buffer;
   juce::AudioProcessLoadMeasurer _load_measurer;  // Load measurer
   std::unique_ptr<FMSynth> _fmsynth;              // Synth.
   std::unique_ptr<EnvModel> _model;  // Resynthesis Model wrapper pointer.
@@ -161,6 +162,8 @@ class FMTTProcessor : public foleys::MagicProcessor,
   FeatureRegister _feat_register;
 
  private:
+  
+  const int fm_block_size = 64;
   juce::AudioFormatManager manager;
 
   // Workaround to fetch MagicGUIBuilder from MagicPlugin class without

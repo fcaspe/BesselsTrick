@@ -111,6 +111,27 @@ void FMTTProcessor::storeToValTree(juce::Identifier child_id,
   }
 }
 
+void FMTTProcessor::updateMeters(float rms_in, float pitch, 
+  juce::AudioBuffer<float> &buffer)
+{
+  if (_input_rms_meter)
+    {
+      auto input_buffer = juce::AudioBuffer<float>(1,1);
+      //Denormalize rms before feeding into meter
+      input_buffer.getWritePointer(0)[0] = powf(20,((rms_in-1.33f)*60.0f)/20.0f);
+      _input_rms_meter->pushSamples(input_buffer);
+    }
+  if (_input_f0_meter)
+    {
+      auto input_buffer = juce::AudioBuffer<float>(1,1);
+      // Scale pitch for feeding into meter
+      input_buffer.getWritePointer(0)[0] = pitch > 3000? 1.0 : pitch/3000 ;
+      _input_f0_meter->pushSamples(input_buffer);
+    }
+  if (_output_meter) _output_meter->pushSamples(buffer);
+
+}
+
 void FMTTProcessor::postSetStateInformation()
 {
   std::cout << "[postSetStateInformation] Recalling from treeState" << std::endl;
