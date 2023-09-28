@@ -163,14 +163,13 @@ void FMTTProcessor::processBlock(juce::AudioBuffer<float>& buffer,
 
     std::vector<float> fm_ol;
     std::vector<float> fm_ol_placeholder = {1, 0, 0, 0, 0, 0};
-    if(_model)
-      if (_config.skipInference == false) {
-        fm_ol = _model->call(pitch_norm, rms_in);
-      } else
-        fm_ol = fm_ol_placeholder;
-      // FM Boost
-      for (int i = 0; i < 6; i++)
-        fm_ol[i] = fm_ol[i] * _config.fm_boost[i];
+    if (_model && _config.skipInference == false) {
+      fm_ol = _model->call(pitch_norm, rms_in);
+    } else
+      fm_ol = fm_ol_placeholder;
+    // FM Boost
+    for (int i = 0; i < 6; i++)
+      fm_ol[i] = fm_ol[i] * _config.fm_boost[i];
 
     /* Step4: Render audio */
     float* renderer_buffer = _fmsynth->render(pitch * _config.pitch_ratio, fm_ol);
