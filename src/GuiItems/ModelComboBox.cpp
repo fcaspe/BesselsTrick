@@ -46,10 +46,10 @@ ModelComboBoxItem::ModelComboBoxItem (foleys::MagicGUIBuilder& builder, const ju
 void ModelComboBoxItem::update()
 {
     //std::cout << "[MODEL CBOX] Update()" << std::endl;
-    if (auto* processor = dynamic_cast<FMTTProcessor*>(magicBuilder.getMagicState().getProcessor()))
+    if (auto* processor = dynamic_cast<BesselsProcessor*>(magicBuilder.getMagicState().getProcessor()))
         {
         combobox.onChange = [&] {
-            if (auto* proc = dynamic_cast<FMTTProcessor*>(magicBuilder.getMagicState().getProcessor()))
+            if (auto* proc = dynamic_cast<BesselsProcessor*>(magicBuilder.getMagicState().getProcessor()))
             {
                 const auto selected_entry = combobox.getSelectedId() - 1;
                 // Stop Audio Processing Thread ( It can crash when re-loading model )

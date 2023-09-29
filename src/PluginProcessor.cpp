@@ -41,10 +41,10 @@ Implements main audio processing and audio configuration functions for the plgui
 #include <cmath>
 
 /**
-FMTTProcessor(): Constructor
+BesselsProcessor(): Constructor
     Here we create our attribute objects.
 */
-FMTTProcessor::FMTTProcessor()
+BesselsProcessor::BesselsProcessor()
     : foleys::MagicProcessor(
           juce::AudioProcessor::BusesProperties()
               .withInput("Input", juce::AudioChannelSet::stereo(), true)
@@ -82,10 +82,10 @@ FMTTProcessor::FMTTProcessor()
 }
 
 /**
-FMTTProcessor(): Destructor
+BesselsProcessor(): Destructor
                              Here we delete our attribute objects.
 */
-FMTTProcessor::~FMTTProcessor() {
+BesselsProcessor::~BesselsProcessor() {
   /*Kill Renderer*/
   _fmsynth.reset();
   _model.reset();
@@ -102,7 +102,7 @@ inline float normalize_pitch(float pitch) {
   return midi_val / midi_highest_note;
 }
 
-inline void FMTTProcessor::sendDebugMessages(int fmblock,float pitch,
+inline void BesselsProcessor::sendDebugMessages(int fmblock,float pitch,
   float pitch_norm,float rms_in, std::vector<float> fm_ol)
 {
   /* DEBUG OVER CONSOLE */
@@ -146,7 +146,7 @@ processBlock(): Rendering function
 The same buffer is used for audio input and output.
 
 */
-void FMTTProcessor::processBlock(juce::AudioBuffer<float>& buffer,
+void BesselsProcessor::processBlock(juce::AudioBuffer<float>& buffer,
                                  juce::MidiBuffer& midiMessages) {
   /* Step1: Cleanup Tasks */
   juce::ignoreUnused(midiMessages);
@@ -242,7 +242,7 @@ void FMTTProcessor::processBlock(juce::AudioBuffer<float>& buffer,
 prepareToPlay(): Reset function to configure plugin according to audio driver.
                 Here we will reset and config all our objects before rendering.
 */
-void FMTTProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
+void BesselsProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
   // Use this method as the place to do any pre-playback initialisation that you
   // need..
 
@@ -274,9 +274,9 @@ void FMTTProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
 }
 
 //==============================================================================
-const juce::String FMTTProcessor::getName() const { return JucePlugin_Name; }
+const juce::String BesselsProcessor::getName() const { return JucePlugin_Name; }
 
-bool FMTTProcessor::acceptsMidi() const {
+bool BesselsProcessor::acceptsMidi() const {
 #if JucePlugin_WantsMidiInput
   return true;
 #else
@@ -284,7 +284,7 @@ bool FMTTProcessor::acceptsMidi() const {
 #endif
 }
 
-bool FMTTProcessor::producesMidi() const {
+bool BesselsProcessor::producesMidi() const {
 #if JucePlugin_ProducesMidiOutput
   return true;
 #else
@@ -292,7 +292,7 @@ bool FMTTProcessor::producesMidi() const {
 #endif
 }
 
-bool FMTTProcessor::isMidiEffect() const {
+bool BesselsProcessor::isMidiEffect() const {
 #if JucePlugin_IsMidiEffect
   return true;
 #else
@@ -300,33 +300,33 @@ bool FMTTProcessor::isMidiEffect() const {
 #endif
 }
 
-double FMTTProcessor::getTailLengthSeconds() const { return 0.0; }
+double BesselsProcessor::getTailLengthSeconds() const { return 0.0; }
 
-int FMTTProcessor::getNumPrograms() {
+int BesselsProcessor::getNumPrograms() {
   return 1;  // NB: some hosts don't cope very well if you tell them there are 0
              // programs, so this should be at least 1, even if you're not
              // really implementing programs.
 }
 
-int FMTTProcessor::getCurrentProgram() { return 0; }
+int BesselsProcessor::getCurrentProgram() { return 0; }
 
-void FMTTProcessor::setCurrentProgram(int index) { juce::ignoreUnused(index); }
+void BesselsProcessor::setCurrentProgram(int index) { juce::ignoreUnused(index); }
 
-const juce::String FMTTProcessor::getProgramName(int index) {
+const juce::String BesselsProcessor::getProgramName(int index) {
   juce::ignoreUnused(index);
   return {};
 }
 
-void FMTTProcessor::changeProgramName(int index, const juce::String& newName) {
+void BesselsProcessor::changeProgramName(int index, const juce::String& newName) {
   juce::ignoreUnused(index, newName);
 }
 
-void FMTTProcessor::releaseResources() {
+void BesselsProcessor::releaseResources() {
   // When playback stops, you can use this as an opportunity to free up any
   // spare memory, etc.
 }
 
-bool FMTTProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const {
+bool BesselsProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const {
 #if JucePlugin_IsMidiEffect
   juce::ignoreUnused(layouts);
   return true;
@@ -350,5 +350,5 @@ bool FMTTProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const {
 //==============================================================================
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter() {
-  return new FMTTProcessor();
+  return new BesselsProcessor();
 }

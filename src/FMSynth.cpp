@@ -127,9 +127,6 @@ std::array<uint8_t, 6> FMSynth::get_fr_coarse() { return _fr_coarse; }
 std::array<uint8_t, 6> FMSynth::get_fr_fine() { return _fr_fine; }
 
 void FMSynth::init(float sampleRate, int blockSize) {
-  /*Clear memory if resetting.*/
-  // free(_buffer);
-  //_buffer = (float*)malloc(sizeof(float)*blockSize);
   _buffer.resize(blockSize);
   for (int i = 0; i < 6; i++) _prev_ol[i] = 0.0f;
   _block_size = blockSize;
@@ -214,8 +211,7 @@ float* FMSynth::render(float pitch_hz, std::vector<float> ol) {
 void FMSynth::render_mm(float pitch_hz, std::array<float, 6> inc_ol) {
   std::array<float, 6> ol;
   ol = _prev_ol;
-  const float scale = TWO_PI;  // standard scale for DX ( cause OL goes up to 2
-                               // )
+  const float scale = TWO_PI;  // standard scale for DX ( OLs go up to 2.0 )
 
   /*Plain auto is by value (you get a copy). Use auto&.*/
   for (auto& sample : _buffer) {

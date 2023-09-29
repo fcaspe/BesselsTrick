@@ -44,7 +44,7 @@ Implements GUI methods within foleys::MagicProcessor plugin class.
 initialiseBuilder(): 
     Here we initialize the GUI Builder
 */
-void FMTTProcessor::initialiseBuilder(foleys::MagicGUIBuilder& builder) {
+void BesselsProcessor::initialiseBuilder(foleys::MagicGUIBuilder& builder) {
   builder.registerJUCEFactories();
   builder.registerJUCELookAndFeels();
   
@@ -58,7 +58,7 @@ void FMTTProcessor::initialiseBuilder(foleys::MagicGUIBuilder& builder) {
   builder_ptr = &builder;
 }
 
-void FMTTProcessor::setupMeters() {
+void BesselsProcessor::setupMeters() {
   _input_rms_meter =
     magicState.createAndAddObject<foleys::MagicLevelSource>("input_rms");
   if(_input_rms_meter)
@@ -77,7 +77,7 @@ void FMTTProcessor::setupMeters() {
 updateKnob(): 
     When we load a new model, update knobs
 */
-void FMTTProcessor::updateKnob(juce::String knob_id, double value) {
+void BesselsProcessor::updateKnob(juce::String knob_id, double value) {
   // Find knob
   if (auto* item = builder_ptr->findGuiItemWithId(knob_id)) {
     // std::cout << "Found " << knob_id << std::endl;
@@ -88,7 +88,7 @@ void FMTTProcessor::updateKnob(juce::String knob_id, double value) {
   }
 }
 
-void FMTTProcessor::updateKnobs() {
+void BesselsProcessor::updateKnobs() {
   // Each knob update will trigger a notification which in turn,
   // Will update the internal plugin state
   updateKnob(GUI_IDs::algorithm, _config.fm_config + 1);
@@ -112,7 +112,7 @@ void FMTTProcessor::updateKnobs() {
 updateAlgoPlot(): 
     When algorithm changes, update graphic
 */
-void FMTTProcessor::updateGuiConfig() {
+void BesselsProcessor::updateGuiConfig() {
   auto *guiconfig = magicState.getObjectWithType<PluginGUIConfig>("guiconfig");
   if(guiconfig != nullptr)
   {
@@ -122,7 +122,7 @@ void FMTTProcessor::updateGuiConfig() {
   }
 }
 
-void FMTTProcessor::setupValueTree()
+void BesselsProcessor::setupValueTree()
 {
   if(magicState.createAndAddObject<PluginGUIConfig>("guiconfig"));
   else
@@ -130,7 +130,7 @@ void FMTTProcessor::setupValueTree()
 
 }
 
-void FMTTProcessor::storeToValTree(juce::Identifier child_id,
+void BesselsProcessor::storeToValTree(juce::Identifier child_id,
   juce::String property,juce::var value)
 {
   auto &val_tree = magicState.getValueTree();
@@ -148,7 +148,7 @@ void FMTTProcessor::storeToValTree(juce::Identifier child_id,
   }
 }
 
-void FMTTProcessor::updateMeters(float rms_in, float pitch, 
+void BesselsProcessor::updateMeters(float rms_in, float pitch, 
   juce::AudioBuffer<float> &buffer)
 {
   if (_input_rms_meter)
@@ -169,7 +169,7 @@ void FMTTProcessor::updateMeters(float rms_in, float pitch,
 
 }
 
-void FMTTProcessor::postSetStateInformation()
+void BesselsProcessor::postSetStateInformation()
 {
   std::cout << "[postSetStateInformation] Recalling from treeState" << std::endl;
   auto *guiconfig = magicState.getObjectWithType<PluginGUIConfig>("guiconfig");
@@ -195,7 +195,7 @@ void FMTTProcessor::postSetStateInformation()
 
 }
 
-void FMTTProcessor::showLoadDialog() {
+void BesselsProcessor::showLoadDialog() {
   if (!builder_ptr) return;
   auto *guiconfig = magicState.getObjectWithType<PluginGUIConfig>("guiconfig");
   if(!guiconfig) return;
@@ -231,7 +231,7 @@ void FMTTProcessor::showLoadDialog() {
   return;
 }
 // Assumes a hidden GRU state of 128 for all models
-void FMTTProcessor::loadModelList() {
+void BesselsProcessor::loadModelList() {
   auto *guiconfig = magicState.getObjectWithType<PluginGUIConfig>("guiconfig");
   if(!guiconfig) return;
   guiconfig->modelfilenames.clear();
@@ -248,13 +248,13 @@ void FMTTProcessor::loadModelList() {
   }
 }
 
-void FMTTProcessor::add_triggers() {
+void BesselsProcessor::add_triggers() {
   magicState.addTrigger("load-model", [&] { showLoadDialog(); });
   magicState.addTrigger("print-valtree", [&] { printValueTree(); });
   return;
 }
 
-void FMTTProcessor::printValueTree() {
+void BesselsProcessor::printValueTree() {
 
   auto &valueTree = magicState.getValueTree();
   std::cout << valueTree.toXmlString() << std::endl;
@@ -348,7 +348,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
   return layout;
 }
 
-void FMTTProcessor::configure_gui_listeners() {
+void BesselsProcessor::configure_gui_listeners() {
   treeState.addParameterListener(IDs::algorithm, this);
 
   treeState.addParameterListener(IDs::fmBoost1, this);
@@ -385,7 +385,7 @@ void FMTTProcessor::configure_gui_listeners() {
   treeState.addParameterListener(IDs::debug9, this);
 }
 
-void FMTTProcessor::parameterChanged(const juce::String& param, float value) {
+void BesselsProcessor::parameterChanged(const juce::String& param, float value) {
   std::cout << param << " " << value << std::endl;
   // FM Configuration
   if (param == IDs::algorithm) {

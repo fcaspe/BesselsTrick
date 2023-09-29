@@ -45,7 +45,7 @@ StatusBarItem::StatusBarItem (foleys::MagicGUIBuilder& builder, const juce::Valu
 
 void StatusBarItem::update_status_message()
 {
-if (auto* processor = dynamic_cast<FMTTProcessor*>(magicBuilder.getMagicState().getProcessor()))
+if (auto* processor = dynamic_cast<BesselsProcessor*>(magicBuilder.getMagicState().getProcessor()))
 {
     auto *guiconfig = magicBuilder.getMagicState().getObjectWithType<PluginGUIConfig>("guiconfig");
     if(guiconfig)
