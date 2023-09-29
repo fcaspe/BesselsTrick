@@ -1,11 +1,15 @@
+/*
+File: YIN.hpp
+
+YIN F0 Estimator, adapted by Franco Caspe for block-based operation.
+Adapted from: https://github.com/JorenSix/Pidato
+
+Original project license: GNU LESSER GENERAL PUBLIC LICENSE
+                          Version 3, 29 June 2007
+
+*/
 #ifndef Yin_h
 #define Yin_h
-
-/*
-YIN F0 Estimator, frame by frame operation.
-
-Adapted from: https://github.com/JorenSix/Pidato
-*/
 
 class Yin {
  public:

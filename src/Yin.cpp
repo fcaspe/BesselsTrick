@@ -1,14 +1,19 @@
+/*
+File: YIN.cpp
+
+adapted by Franco Caspe for block-based operation.
+Adapted from: https://github.com/JorenSix/Pidato
+
+Original project license: GNU LESSER GENERAL PUBLIC LICENSE
+                          Version 3, 29 June 2007
+
+*/
 #include "Yin.hpp"
 
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
 
-/*
-YIN F0 Estimator, frame by frame operation.
-
-Adapted from: https://github.com/JorenSix/Pidato
-*/
 void Yin::init(float yinSampleRate, int yinBufferSize, int frameSize,
                float yinThreshold, bool downsample_x2) {
   _downsample_x2 = downsample_x2;
