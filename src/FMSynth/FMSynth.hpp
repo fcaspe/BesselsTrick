@@ -44,7 +44,6 @@ File: FMSynth.hpp
 #include <array>
 #include <vector>
 
-#include "PluginConfig.hpp"
 #include "algorithms.hpp"
 
 class FMSynth {

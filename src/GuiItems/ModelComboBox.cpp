@@ -35,7 +35,7 @@
 File: ModelComboBox.cpp
 Implements ModelComboBox GUI object.
 */
-#include "../GuiItems.hpp"
+#include "GuiItems.hpp"
 
 ModelComboBoxItem::ModelComboBoxItem (foleys::MagicGUIBuilder& builder, const juce::ValueTree& node): foleys::GuiItem (builder, node)
 {

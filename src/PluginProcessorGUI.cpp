@@ -37,7 +37,7 @@ Implements GUI methods within foleys::MagicProcessor plugin class.
 */
 #include <cmath>
 
-#include "GuiItems.hpp"
+#include "GuiItems/GuiItems.hpp"
 #include "PluginProcessor.hpp"
 
 /**

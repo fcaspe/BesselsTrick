@@ -36,7 +36,7 @@ File: StatusBar.cpp
 Implements StatusBar GUI object.
 */
 
-#include "../GuiItems.hpp"
+#include "GuiItems.hpp"
 
 StatusBarItem::StatusBarItem (foleys::MagicGUIBuilder& builder, const juce::ValueTree& node) : foleys::GuiItem (builder, node)
 {

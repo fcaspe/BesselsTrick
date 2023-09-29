@@ -45,7 +45,7 @@ Declaration of Special GUI items, including:
 #define DONT_SET_USING_JUCE_NAMESPACE 1
 #include "JuceHeader.h"
 #include <foleys_gui_magic/foleys_gui_magic.h>
-#include "PluginProcessor.hpp"
+#include "../PluginProcessor.hpp"
 
 // gui component for displaying the FM algorithm
 class DrawableLabel : public juce::Component

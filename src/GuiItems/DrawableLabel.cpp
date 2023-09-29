@@ -36,7 +36,7 @@ File: DrawableLabel.cpp
 Implements DrawableLabel GUI object.
 */
 
-#include "../GuiItems.hpp"
+#include "GuiItems.hpp"
 #include "BinaryData.h"
 
 DrawableLabel::DrawableLabel()

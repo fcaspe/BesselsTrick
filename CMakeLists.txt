@@ -121,11 +121,11 @@ target_sources(BesselsTrick PRIVATE
     src/PluginProcessor.cpp
     src/PluginProcessorGUI.cpp
     src/PluginProcessorModelRoutines.cpp
-    src/TorchInference.cpp
-    src/EnvModels.cpp
-    src/FMSynth.cpp
-    src/RMSProcessor.cpp
-    src/Yin.cpp
+    src/Inference/TorchInference.cpp
+    src/Inference/EnvModels.cpp
+    src/FMSynth/FMSynth.cpp
+    src/FeatureProcessing/RMSProcessor.cpp
+    src/FeatureProcessing/Yin.cpp
     src/GuiItems/DrawableLabel.cpp
     src/GuiItems/ModelComboBox.cpp
     src/GuiItems/RatiosBar.cpp
