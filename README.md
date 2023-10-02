@@ -27,10 +27,11 @@ The main characteristics are:
 
 ## Train your own model
 
-To train new models visit the [Learned Envelopes](https://github.com/fcaspe/fmtransfer) Repo
+This plugin supports models trained with the [Envelope Learning](https://qmro.qmul.ac.uk/xmlui/handle/123456789/90812) method.  
+For info on how to train new models visit the [fmtransfer](https://github.com/fcaspe/fmtransfer) repository.
 ## Build it
 
-*(Requires CMAKE 3.14 or above)* Clone this repository and run:
+Clone this repository and run:
 
 ```bash
 source build.sh
