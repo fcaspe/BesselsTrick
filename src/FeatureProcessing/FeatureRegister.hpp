@@ -56,11 +56,15 @@ class FeatureRegister {
     _registered_rms = 0.0f;
   }
   void setState(bool enable) {
-    std::cout << "[FEATREG] State set: " << enable << std::endl;
+    std::cout << "[FEATREG] State set: " << \
+      ((enable)? "WAITING" : "DISABLED" )\
+      << std::endl;
     _state = enable ? WAITING : DISABLED;
   }
   void setMode(WorkingMode mode) {
-    std::cout << "[FEATREG] Mode set: " << mode << std::endl;
+    std::cout << "[FEATREG] Mode set: " << \
+      ((mode == SYNC)? "SYNC" : "LATCH")\
+      << std::endl;
     _mode = mode;
   }
   float run(float f0, float rms) {

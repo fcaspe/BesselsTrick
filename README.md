@@ -15,11 +15,10 @@ The main characteristics are:
     - Based on the classic Yamaha DX7.
  - Comes with many pretrained examples!
     - See the Release webpage.
- - FM controls tweakable on real time.
- - Can train your own model
+ - Tweakable FM controls on real time.
+ - Can train your own model.
 
 ## How does it work?
-
 
 ### Why FM?
 

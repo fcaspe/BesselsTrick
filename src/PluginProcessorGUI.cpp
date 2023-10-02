@@ -340,7 +340,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
       std::make_unique<juce::AudioParameterInt>(
           juce::ParameterID(IDs::debug8, 1), "Enable FeatReg", 0, 1, 0),
       std::make_unique<juce::AudioParameterInt>(
-          juce::ParameterID(IDs::debug9, 1), "FeatReg Mode", 0, 1, 0));
+          juce::ParameterID(IDs::debug9, 1), "FeatReg Mode", 0, 1, 0)); //Modes: {SYNC,LATCH}
   
   layout.add(std::move(algorithm), std::move(ratios_dx),
             std::move(boost), std::move(gain), std::move(debug));
