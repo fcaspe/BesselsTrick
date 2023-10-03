@@ -44,7 +44,7 @@ class RMS_Processor {
     _n_entries = 0;
   }
   ~RMS_Processor();
-  void init(int windowSize, int blockSize);
+  void init(int windowSize, int blockSize, bool linear_output);
   float process(const float* frame);
 
  private:

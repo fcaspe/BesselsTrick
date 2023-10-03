@@ -52,11 +52,12 @@ RMS_Processor::~RMS_Processor()
         free(_rms_buffer);
         }
 
-void RMS_Processor::init(int windowSize, int blockSize)
+void RMS_Processor::init(int windowSize, int blockSize, bool linear_output)
     {
     std::cout << "[RMS] Called init winsize " << windowSize << " blocksize " << blockSize << std::endl;
     _n_entries = windowSize/blockSize;
     _rms_buffer = (float*) malloc( _n_entries * sizeof(float));
+    _use_linear_output = linear_output;
     for(int i = 0; i < _n_entries;i++)
         _rms_buffer[i] = 0.0f;
     _measure_count = 0;
@@ -93,6 +94,9 @@ float RMS_Processor::process(const float* frame)
     
     if(_use_linear_output == true)
         {
+            const float lim = 2.0f;
+            acc = acc * 32.0f;
+            acc = acc > lim? lim : acc;
             return acc;
         }
     else

@@ -259,8 +259,9 @@ void BesselsProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
   /* Init RMS processor */
   const int RMS_WINDOW = 2048;
   if (_rms_processor)
-    _rms_processor->init(RMS_WINDOW,        // Window size
-                         fm_block_size);  // Block size
+    _rms_processor->init(RMS_WINDOW,    // Window size
+                         fm_block_size, // Block size
+                         true);         // Linear output
 
   /* Init Pitch Tracker */
   
