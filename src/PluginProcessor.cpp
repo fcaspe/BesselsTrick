@@ -226,12 +226,13 @@ void BesselsProcessor::processBlock(juce::AudioBuffer<float>& buffer,
   /* Step5: Store audio in JUCE's output buffers. */
   for (int i = 0; i < totalNumOutputChannels; i++) {
     auto* channelData = buffer.getWritePointer(i);
-    auto *renderData = _fm_render_buffer.getReadPointer(i,0);
+    // Our fm render buffer contains just one channel
+    auto *renderData = _fm_render_buffer.getReadPointer(0,0);
     if (_config.enableAudioPassthrough == false) {
       // Clear buffer with input audio.
       buffer.clear(i, 0, buffer.getNumSamples());
       for (auto sample = 0; sample < buffer.getNumSamples(); sample++) {
-        channelData[sample] = 0.0f;//renderData[sample] * _config.out_gain;
+        channelData[sample] = renderData[sample] * _config.out_gain;
       }
     }
   }
