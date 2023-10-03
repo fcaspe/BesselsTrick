@@ -68,6 +68,7 @@ void RMS_Processor::init(int windowSize, int blockSize, bool linear_output)
 float RMS_Processor::process(const float* frame)
     {
     /*Measure frame's RMS */
+    float retval = 0.0f;
     float acc = 0.0f;
     for(int i = 0; i < _block_size;i++)
         {
@@ -77,32 +78,22 @@ float RMS_Processor::process(const float* frame)
     /*Accumulate in buffer */
     _rms_buffer[_measure_count] = acc;
     _measure_count = ++_measure_count & (_n_entries-1); //Wrap counter
-    //rt_printf("C: %i\t",_measure_count);
-
     
     /* Fetch complete RMS window */
-    /* TODO:
-        This will introduce a transient in the beggining,
-        when the buffer is still not full. We could just account
-        for the loaded samples until the buffer is full.
-        Leave this for a later implementation. */
-    
     acc = 0.0f;
     for(int i = 0; i < _n_entries;i++)
         acc += _rms_buffer[i];
     acc /= (float)_n_entries;
     
     if(_use_linear_output == true)
-        {
+        { // Linear RMS to amp feature, clamp at 2.
             const float lim = 2.0f;
-            acc = acc * 32.0f;
-            acc = acc > lim? lim : acc;
-            return acc;
+            acc = acc * 32.0f; // Found by trial and error.
+            retval = acc > lim? lim : acc;
         }
     else
-        {
+        { // Logarithm RMS to amp feature
         /* Compute Squared RMS in dB */
-        
         if (acc < 1e-20f) acc = 1e-20f; //Avoid log instabilities
         float rms_squared_db = 20.0*log10f(acc);
         //std::cout << "acc = " << acc << " rms_squared_db = " << rms_squared_db << std::endl;
@@ -111,8 +102,7 @@ float RMS_Processor::process(const float* frame)
         // rms_norm = a * rms +  b; -> a = 1/60, b = 4/3
         if(rms_squared_db < -_DB_RANGE) rms_squared_db = -_DB_RANGE;
 
-        return (a_rms * rms_squared_db + b_rms);
+        retval = (a_rms * rms_squared_db + b_rms);
         }
-    
-    return 0; //never reach here
+    return retval;
     }
