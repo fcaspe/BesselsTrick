@@ -1,6 +1,6 @@
 
 <center>
-<img src="resources/img/bt_bkg.png" alt="Logo" width=500>
+<img src="resources/imgdoc/bt_bkg.png" alt="Logo" width=500>
 </center>
 
 **Bessel's Trick** is a `Neural Audio Plugin` for **fast, live** Tone Transformation of Musical Instrument sounds using [Frequency Modulation](https://en.wikipedia.org/wiki/Frequency_modulation_synthesis) (FM) synthesis.
@@ -20,6 +20,13 @@
  - Tweakable FM controls on real time.
  - VST3 and AU plugin formats available.
 
+&nbsp;
+<center>
+<img src="resources/imgdoc/bt_screenshot.png" alt="Logo" width=600>
+
+</center>
+<center>Plugin GUI</center>
+
 ## Build it
 
 Clone this repository and run:
@@ -37,7 +44,7 @@ Bringing more sounds require obtaining an FM patch in DX7 format and then traini
 ## How does it work?
 
 <center>
-<img src="resources/img/pipeline.png" alt="Logo" width=600>
+<img src="resources/imgdoc/pipeline.png" alt="Logo" width=600>
 </center>
 
 Bessel's Trick does not use MIDI to control the synth. Instead, it works in an `audio to audio` fashion, similar to other [Tone Transfer](https://sites.research.google/tonetransfer) approaches.
