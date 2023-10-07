@@ -143,6 +143,7 @@ target_compile_definitions(BesselsTrick
     PRIVATE
     # JUCE_WEB_BROWSER and JUCE_USE_CURL would be on by default, but you might not need them.
     FOLEYS_ENABLE_BINARY_DATA=1
+    FOLEYS_SHOW_GUI_EDITOR_PALLETTE=0 # Disables the PGM floating WYSWYG editor.
     JUCE_WEB_BROWSER=0  # If you remove this, add `NEEDS_WEB_BROWSER TRUE` to the `juce_add_plugin` call
     JUCE_USE_CURL=0     # If you remove this, add `NEEDS_CURL TRUE` to the `juce_add_plugin` call
     JUCE_VST3_CAN_REPLACE_VST2=0)
@@ -156,7 +157,7 @@ target_compile_definitions(BesselsTrick
 
 juce_add_binary_data(${PROJECT_NAME}_data
                     SOURCES
-                    resources/magic_bake.xml  resources/img/logo.png
+                    resources/magic_bake.xml  resources/img/logo.png    resources/img/bgcolor.png
                     resources/img/algo_1.png  resources/img/algo_2.png  resources/img/algo_3.png  resources/img/algo_4.png
                     resources/img/algo_5.png  resources/img/algo_6.png  resources/img/algo_7.png  resources/img/algo_8.png
                     resources/img/algo_9.png  resources/img/algo_10.png resources/img/algo_11.png resources/img/algo_12.png

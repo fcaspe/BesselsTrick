@@ -263,11 +263,8 @@ void BesselsProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
                          fm_block_size, // Block size
                          true);         // Linear output
 
-  /* Init Pitch Tracker */
-  
-  // Minimum f0: 2*(sr/yinwindow)
-  //const int YIN_WINDOW = 512; //173Hz @ 44.1kHz
-  const int YIN_WINDOW = 1280; //69Hz @ 44.1kHz
+  /* Init Pitch Trackers */
+  // Minimum f0 detectable: 2*(sr/yinwindow)
   const std::array<int,4> yin_windows = {256,512,1024,1280};
   const std::array<bool,4> yin_downsample = {false,false,false,false};
   _tracker_manager.init(sampleRate, yin_windows, fm_block_size,
