@@ -43,6 +43,7 @@ File: FMSynth.hpp
 
 #include <array>
 #include <vector>
+#include <cstdint>
 
 #include "algorithms.hpp"
 
