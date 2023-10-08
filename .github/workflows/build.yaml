@@ -148,5 +148,5 @@ jobs:
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: BesselsTrick_MacOS_arm64
+          name: BesselsTrick_MacOS_intel
           path: build/BesselsTrick_artefacts/Release

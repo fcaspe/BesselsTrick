@@ -30,7 +30,6 @@
 Plugin's GUI
 </p>
 
-
 ## Build it
 
 Clone this repository and run:
