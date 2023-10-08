@@ -22,7 +22,7 @@
   </Styles>
   <View id="root" flex-align-items="stretch" flex-wrap="nowrap" flex-align-self="stretch"
         image-placement="stretch" resizable="0" resize-corner="0" min-width="850"
-        min-height="400" flex-direction="column" background-image="algo_23_png"
+        min-height="400" flex-direction="column" background-image="bgcolor_png"
         max-height="400" max-width="850" caption-placement="top-left"
         caption="" caption-size="" width="850" height="400">
     <View flex-direction="column" max-height="400" max-width="850" background-color="FF12083D"

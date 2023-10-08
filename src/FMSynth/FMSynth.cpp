@@ -40,6 +40,8 @@ File: FMSynth.cpp
 
 #include <cmath>
 #include <iostream>
+#include <cstring>
+#include <algorithm>
 #define OP6 5
 #define OP5 4
 #define OP4 3
