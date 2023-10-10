@@ -14,7 +14,7 @@ function(get_torch_libs libs)
             ${TORCH_INSTALL_PREFIX}/lib/libc10.dylib
         )
 
-        # if the architecture is arm64, we need to add the libiomp5 library
+        # if the architecture is intel, we need to add the libiomp5 library
         if (CMAKE_OSX_ARCHITECTURES STREQUAL "x86_64")
             list(APPEND TORCH_LIBS ${TORCH_INSTALL_PREFIX}/lib/libiomp5.dylib)
         endif()
