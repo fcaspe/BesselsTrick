@@ -19,7 +19,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(APPLE)
   set(CMAKE_OSX_DEPLOYMENT_TARGET "12.0.1")  
-  set (formats AU VST3 Standalone)
+  set (formats AU VST3)
 else()
   set (formats VST3)
 endif()
