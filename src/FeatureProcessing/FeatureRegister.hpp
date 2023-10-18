@@ -51,7 +51,7 @@ class FeatureRegister {
   };
   enum WorkingMode { SYNC, LATCH };
   FeatureRegister() {
-    _state = DISABLED;
+    _state = WAITING;
     _mode = SYNC;
     _registered_rms = 0.0f;
   }
