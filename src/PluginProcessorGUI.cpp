@@ -338,9 +338,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout() {
       std::make_unique<juce::AudioParameterInt>(
           juce::ParameterID(IDs::debug7, 1), "Enable OSC", 0, 1, 0),
       std::make_unique<juce::AudioParameterInt>(
-          juce::ParameterID(IDs::debug8, 1), "Enable FeatReg", 0, 1, 1),
+          juce::ParameterID(IDs::debug8, 1), "Enable FeatReg", 0, 1, 1), //Should be engaged by default.
       std::make_unique<juce::AudioParameterInt>(
-          juce::ParameterID(IDs::debug9, 1), "FeatReg Mode", 0, 1, 0)); //Modes: {SYNC,LATCH}
+          juce::ParameterID(IDs::debug9, 1), "FeatReg Mode", 0, 1, 0)); //Default mode: SYNC
   
   layout.add(std::move(algorithm), std::move(ratios_dx),
             std::move(boost), std::move(gain), std::move(debug));
