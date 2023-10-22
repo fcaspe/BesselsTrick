@@ -155,20 +155,23 @@ void BesselsProcessor::processBlock(juce::AudioBuffer<float>& buffer,
   auto totalNumInputChannels = getTotalNumInputChannels();
   auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-
-
   for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
     buffer.clear(i, 0, buffer.getNumSamples());
 
   juce::AudioProcessLoadMeasurer::ScopedTimer s(_load_measurer);
-
   juce::ignoreUnused(midiMessages);
   
+  const int input_ch = 0;  // Use Channel 0 as input
+  
+  // Compute global f0 for all fmblocks to be synthesized.
+  _tracker_manager.updateBuffer(buffer.getReadPointer(input_ch));
+  float pitch = _tracker_manager.getPitch();
+  float pitch_norm = normalize_pitch(pitch);
+
   // Each fm block renders 64 samples, adapt to the selected plugin block size.
   for(int fmblock = 0; fmblock < _config.num_fmblocks ; fmblock++)
   {
     const int start_sample = fm_block_size*fmblock;
-    const int input_ch = 0;  // Use Channel 0 as input
 
     auto* input_read_ptr = buffer.getWritePointer(input_ch,start_sample);
     auto *audio_input = buffer.getReadPointer(input_ch,start_sample);
@@ -180,12 +183,6 @@ void BesselsProcessor::processBlock(juce::AudioBuffer<float>& buffer,
     /* Step2: Gather control inputs */
     // RMS
     float rms_in = _rms_processor->process(audio_input);
-
-    // PITCH
-    _tracker_manager.updateBuffer(audio_input);
-    float pitch = _tracker_manager.getPitch();
-    //float prob = _pitch_tracker->getProbability();
-    float pitch_norm = normalize_pitch(pitch);
 
     // Run Feature Register
     rms_in = _feat_register.run(pitch, rms_in);
@@ -267,7 +264,7 @@ void BesselsProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
   // Minimum f0 detectable: 2*(sr/yinwindow)
   const std::array<int,4> yin_windows = {256,512,1024,1280};
   const std::array<bool,4> yin_downsample = {false,false,false,false};
-  _tracker_manager.init(sampleRate, yin_windows, fm_block_size,
+  _tracker_manager.init(sampleRate, yin_windows, samplesPerBlock,
                         0.15f, // Threshold
                         yin_downsample); // Downsample x2
 }
