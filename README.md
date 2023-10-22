@@ -86,8 +86,8 @@ I would like to thank these lovely folks for their time!
  If you find this work useful, please consider citing us:
 
 ```bibtex
-@article{caspe2023learnedenvelopes,
-    title={{FM Tone Transfer with Learned Envelopes}},
+@article{caspe2023envelopelearning,
+    title={{FM Tone Transfer with Envelope Learning}},
     author={Caspe, Franco and McPherson, Andrew and Sandler, Mark},
     journal={Proceedings of Audio Mostly 2023},
     year={2023}
